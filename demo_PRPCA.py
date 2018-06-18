@@ -19,31 +19,40 @@ import os
 
 # Accessing the local data (frames) at a speicifc path
 # resizing it by 0.5, and storing them in a 4-D array.
-numel = 20
+# The 4-D array/Matrix is actually:
+# "MovMat is a height * width * 3 * #frame video matrix"
 
-# Initializing the array with 0 values.
-w, h = 8, 5;
-Matrix = [[0 for x in range(w)] for y in range(h)]
-
-# Gets the list of names of the frames.
-contents = os.listdir("directory path")
+# Gets the list of names of the frames along with the
+# number of total frames.
+contents = os.listdir("./Data/tennis")
 numberOfElementsInContents = len(contents)
 
+# Initializing the array with 0 values.
+w, h, z = 1, 1, 3;
+MovMat = [[[0 for x in range(w)] for y in range(h)] for z in range(z)]
+
+# This is 0-Indexed Matrix. Goes through every single
+# frame and sets it to the MovMat.
 for a in range(numberOfElementsInContents):
-	for b in 
 	# Getting the specific frame and saving in the 4-D array.
-	MovMat = [,,,i]
+	print(MovMat[2][0][0])
 
-	w, h = 8, 5;
-	Matrix = [[0 for x in range(w)] for y in range(h)]
+#Description
+#example
+#B = imresize(A,scale) returns image B that is scale times the size of A. The input image A can be a grayscale, RGB, or binary image. If A has more than two dimensions, imresize only resizes the first two dimensions. If scale is in the range [0, 1], B is smaller than A. If scale is greater than 1, B is larger than A. By default, imresize uses bicubic interpolation.
 
-# Converting the data to double (?)
-MovMat = Double(MovMat)
-MovMat = MovMat(,,,1,1,35) # This works somehow.
+#	A(:,:,3) =
+ #    5     5     5
+ #    5     5     5
+ #    5     5     5
+
+
+	#MovMat = Double(MovMat)
+	#MovMat = MovMat(,,,1,1,35) # This works somehow.
 
 # RGB PRPCA
 # Getting the return value and saving them.
-[RPCA_image, L, S, L_RPCA, S_RPCA] = PRPCA_RGB(MovMat)
+	#[RPCA_image, L, S, L_RPCA, S_RPCA] = PRPCA_RGB(MovMat)
 
 # Showing the results visually.
 
