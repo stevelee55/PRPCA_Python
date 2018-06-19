@@ -32,12 +32,15 @@ from skimage import transform
 contents = os.listdir("./Data/tennis")
 numberOfElementsInContents = len(contents)
 img = imread("Data/tennis/00000.jpg")
-img = transform.resize(img, (0.5, 0.5))
+# Getting the new width and height for the video frame.
+newWidth = len(img) * 0.5
+newHeight = len(img[0]) * 0.5
+img = transform.resize(img, (newWidth, newHeight))
 
 # These are used to present and show the imported image.
-print(img)
-#plt.imshow(img)
-#plt.show()
+# print(img)
+# plt.imshow(img)
+# plt.show()
 
 # Initializing the 4-D Matrix with 0 values.
 # Apparently the matrix is width * height * 3 * # of frames of the video.
