@@ -10,8 +10,12 @@
 
 # Necessary libraries.
 import os
+# the code must be run by saying python3.6 <filename>
+from imread import imread
+import matplotlib.pyplot as plt
+from skimage import transform
 
-###
+#######################################################
 
 # L + S RGB
 
@@ -21,34 +25,51 @@ import os
 # resizing it by 0.5, and storing them in a 4-D array.
 # The 4-D array/Matrix is actually:
 # "MovMat is a height * width * 3 * #frame video matrix"
+# Is it * because it's RGB?
 
 # Gets the list of names of the frames along with the
 # number of total frames.
 contents = os.listdir("./Data/tennis")
 numberOfElementsInContents = len(contents)
+img = imread("Data/tennis/00000.jpg")
+img = transform.resize(img, (0.5, 0.5))
 
-# Initializing the array with 0 values.
-w, h, z = 1, 1, 3;
-MovMat = [[[0 for x in range(w)] for y in range(h)] for z in range(z)]
+# These are used to present and show the imported image.
+print(img)
+#plt.imshow(img)
+#plt.show()
+
+# Initializing the 4-D Matrix with 0 values.
+# Apparently the matrix is width * height * 3 * # of frames of the video.
+numberOfVideoFrames = numberOfElementsInContents
+width = 20
+height = 5
+mys = 3
+MovMat = [[[[0 for x in range(width)] for y in range(height)] for m in range(mys)] for z in range(numberOfVideoFrames)]
+
+	#Checking to see if the MovMat is initizlied correctly.
+counter = 0
+
+	# for z in range(numberOfVideoFrames):
+	# 	for y in range(height):
+	# 		for x in range(width):
+	# 			counter+=1
+
+	# print(counter)
 
 # This is 0-Indexed Matrix. Goes through every single
 # frame and sets it to the MovMat.
 for a in range(numberOfElementsInContents):
 	# Getting the specific frame and saving in the 4-D array.
-	print(MovMat[2][0][0])
+	#print(MovMat[2][0][0])
+	counter+=1
 
-#Description
-#example
-#B = imresize(A,scale) returns image B that is scale times the size of A. The input image A can be a grayscale, RGB, or binary image. If A has more than two dimensions, imresize only resizes the first two dimensions. If scale is in the range [0, 1], B is smaller than A. If scale is greater than 1, B is larger than A. By default, imresize uses bicubic interpolation.
-
-#	A(:,:,3) =
- #    5     5     5
- #    5     5     5
- #    5     5     5
+	#Description
+	#example
+	#B = imresize(A,scale) returns image B that is scale times the size of A. The input image A can be a grayscale, RGB, or binary image. If A has more than two dimensions, imresize only resizes the first two dimensions. If scale is in the range [0, 1], B is smaller than A. If scale is greater than 1, B is larger than A. By default, imresize uses bicubic interpolation.
 
 
-	#MovMat = Double(MovMat)
-	#MovMat = MovMat(,,,1,1,35) # This works somehow.
+
 
 # RGB PRPCA
 # Getting the return value and saving them.
