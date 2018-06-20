@@ -21,9 +21,6 @@ def PRPCA_RGB(movmat):
 
 	return "hello world", [2,3], "yay", "123", 3
 
-
-
-
 #######################################################
 
 # L + S RGB
@@ -95,11 +92,7 @@ print(len(NewMovMat))
 # RGB PRPCA
 # Getting the return value and saving them.
 RPCA_image, L, S, L_RPCA, S_RPCA = PRPCA_RGB(MovMat)
-print(RPCA_image)
-print(L)
-print(S)
-print(L_RPCA)
-print(S_RPCA)
+
 
 # Showing the results visually.
 # Panorama
