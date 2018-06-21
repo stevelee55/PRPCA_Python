@@ -17,7 +17,14 @@ from skimage import transform
 
 #######################################################
 # Function Definitions
+def HomographyTrans(movmat):
+
+	return Y, Mask, height, width, T
+
 def PRPCA_RGB(movmat):
+
+	# Homography transformation
+	Y, Mask, height, width, T = HomographyTrans(movmat)
 
 	return "hello world", [2,3], "yay", "123", 3
 
