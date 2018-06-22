@@ -35,6 +35,9 @@ class PRPCA_RGB(object):
 		# Parameter for the LamS: Not sure what this really represents yet.
 		lamSParameter = 1 / math.sqrt(max(size(Y)))
 		LamS = parseField(opts, "LamS", lamSParameter)
+		# The third parameter is "100", but see if it can be changed and see what it affects.
+		# It may be like the 35 frame limit, which was to run the code pretty fast by only using the
+		# 35 frames.
 		nIters = parseField(opts, "nIters", 100)
 
 	def parseInputs2(self, opts):
