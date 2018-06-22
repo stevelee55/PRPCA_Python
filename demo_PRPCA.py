@@ -17,7 +17,7 @@ from skimage import transform
 
 # Classes
 
-from PRPCA_RGB.py import PRPCA_RGB
+from PRPCA_RGB import PRPCA_RGB
 
 #######################################################
 # Function Definitions
@@ -27,6 +27,7 @@ def HomographyTrans(movmat):
 ####### PRPCA_RGB
 instance = PRPCA_RGB()
 instance.helloWorld()
+instance.parseInputs(2,3)
 
 
 #######################################################
