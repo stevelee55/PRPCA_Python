@@ -15,31 +15,19 @@ from imread import imread
 import matplotlib.pyplot as plt
 from skimage import transform
 
+# Classes
+
+from PRPCA_RGB.py import PRPCA_RGB
+
 #######################################################
 # Function Definitions
 def HomographyTrans(movmat):
 	return Y, Mask, height, width, T
 
 ####### PRPCA_RGB
-def parseInputs(Y, opts)
-	
-def PRPCA_RGB(movmat):
+instance = PRPCA_RGB()
+instance.helloWorld()
 
-	# Homography transformation
-	Y, Mask, height, width, T = HomographyTrans(movmat)
-
-	# Parse inputs (?)
-	LamS, nIters = parseInputs(Y,)
-
-	# Calculating meaningful region for boosting (?)
-	m = any(Mask,2)
-	Ytil = Y(m,:)
-	Mtil = Mask(m,:)
-
-	# RPCA
-	opts.M = Mtil
-
-	return "hello world", [2,3], "yay", "123", 3
 
 #######################################################
 
