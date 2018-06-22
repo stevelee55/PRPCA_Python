@@ -40,24 +40,46 @@ class PRPCA_RGB(object):
 		# 35 frames.
 		nIters = parseField(opts, "nIters", 100)
 
-	def parseInputs2(self, opts):
-		return "Defautl"
+		return LamS, nIters
+
+	def parseInputs2(self): #, opts):
+		# Below is the psudo code for the matlab code that I don't think
+		# it's necessary. For now, create the opts object in this function
+		# and use it and return it instead.
+		# if opts and var do not exist
+		# 	then opts = struct()
+		opts = struct
+
+		# I think isRGB is boolearn return type so I changed the third paramter from
+		# 1 to "True".
+		isRGB = parseField(opts, "isRGB", True)
+		method = parseField(opts, "method", "numeric")
+
+		return isRGB, method
 		
 		
 	def PRPCA_RGB_Woah(movmat):
 
-		# # Homography transformation
-		# Y, Mask, height, width, T = HomographyTrans(movmat)
+		# Took out varagin{:} since it's matlab notation for "Any arguement"
+		isRGB, method = parseInputs2()
+		# Creating a struct to hold the above-returned values.
+		optsHT = struct
+		optsHT.isRGB = isRGB
+		optsHT.method = method
 
-		# # Parse inputs (?)
-		# LamS, nIters = parseInputs(Y,)
+		# Homography transformation
+		Y, Mask, height, width, T = HomographyTrans(movmat)
 
-		# # Calculating meaningful region for boosting (?)
-		# m = any(Mask,2)
-		# Ytil = Y(m,:)
-		# Mtil = Mask(m,:)
+		# Parse inputs.
+		# Took out varagin{:} since it's matlab notation for "Any arguement"
+		LamS, nIters = parseInputs(Y)
 
-		# # RPCA
-		# opts.M = Mtil
+		# Calculating meaningful region for boosting (?)
+		m = any(Mask,2)
+		Ytil = Y(m,:)
+		Mtil = Mask(m,:)
+
+		# RPCA
+		opts.M = Mtil
 
 		return "hello world", [2,3], "yay", "123", 3
