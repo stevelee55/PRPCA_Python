@@ -58,7 +58,7 @@ class PRPCA_RGB(object):
 		return isRGB, method
 		
 		
-	def PRPCA_RGB_Woah(movmat):
+	def PRPCA_RGB_Main(self, movmat):
 
 		# Took out varagin{:} since it's matlab notation for "Any arguement"
 		isRGB, method = parseInputs2()

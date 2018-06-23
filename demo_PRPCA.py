@@ -16,7 +16,6 @@ import matplotlib.pyplot as plt
 from skimage import transform
 
 # Classes
-
 from PRPCA_RGB import PRPCA_RGB
 
 #######################################################
@@ -26,7 +25,6 @@ def HomographyTrans(movmat):
 
 ####### PRPCA_RGB
 instance = PRPCA_RGB()
-instance.helloWorld()
 instance.parseInputs(2,3)
 
 
