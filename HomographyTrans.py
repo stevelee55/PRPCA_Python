@@ -1,6 +1,8 @@
 import numpy
 import struct
-from skimage.color import rgb2gray 
+from skimage.color import rgb2gray
+import cv2
+import matplotlib.transforms
 
 class HomographyTrans(object):
 
@@ -45,13 +47,31 @@ class HomographyTrans(object):
 		if (!isRGB):
 			# I put 2 instead of 3 because python is 0-indexed.
 			numOfFrames = movmat.shape[2]
-			# The first frame.
-			for i in range(35):
-				NewMovMat[i] = MovMat[i]
-
-			# Get only the first one.
+			# Get only the first frame. This is probably because when
+			# the video is not RGB, then it is only 3-D.
 			imgB = movmat[0]
 		else:
 			# Not exactly sure what this returns but just going by the website: http://mathesaurus.sourceforge.net/matlab-numpy.html
 			numOfFrames = movmat.shape[3]
-			imgB = rgb2gray()
+			# Get only the first frame's gray color(?)
+			imgB = rgb2gray(MovMat[0])
+
+		# Extract features points in the first frame.
+		# Use SURF first and then try to use others.
+		# Creating Surf object.
+		surf = cv2.xfeatures2d.SURF_create()
+		# Key poitns and descriptors(?) https://docs.opencv.org/3.0-beta/doc/py_tutorials/py_feature2d/py_surf_intro/py_surf_intro.html#surf-in-opencv
+		points, features = surf.detectAndCompute(imgB)
+		# Creating 1-D matrix of tforms. Based on the matlab outputs, seems like affin2d and projective2d results are the same.
+		# I think the only difference is that the object type is different.
+		tforms = [0 for x in range(numOfFrames)]
+		tforms[numOfFrames - 1] = matplotlib.transforms.Affine2D(numpy.eye(3))
+
+		# Repeating the above for every frame.
+		for n in range(numOfFrames)
+
+
+
+
+
+
