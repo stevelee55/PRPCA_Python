@@ -54,7 +54,7 @@ class HomographyTrans(object):
 			# Not exactly sure what this returns but just going by the website: http://mathesaurus.sourceforge.net/matlab-numpy.html
 			numOfFrames = movmat.shape[3]
 			# Get only the first frame's gray color(?)
-			imgB = rgb2gray(MovMat[0])
+			imgB = rgb2gray(movmat[0])
 
 		# Extract features points in the first frame.
 		# Use SURF first and then try to use others.
@@ -68,9 +68,20 @@ class HomographyTrans(object):
 		tforms[numOfFrames - 1] = matplotlib.transforms.Affine2D(numpy.eye(3))
 
 		# Repeating the above for every frame.
-		for n in range(numOfFrames)
+		# Starting from the index 1 because the first frame has already been processed.
+		for n in range(1, numOfFrames):
+			pointsPrevious = points
+			featuresPrevious = features
 
+			# Reading in the next frame.
+			if (!isRGB):
+				imgB = movmat[0]
+			else:
+				imgB = rgb2gray(movmat[0])
 
+	# Temporary till figuring everyhing out.
+			points, features = points, features = surf.detectAndCompute(imgB)
+			indexPairs = match
 
 
 
