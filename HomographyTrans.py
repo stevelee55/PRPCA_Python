@@ -61,7 +61,12 @@ class HomographyTrans(object):
 		# Creating Surf object.
 		surf = cv2.xfeatures2d.SURF_create()
 		# Key poitns and descriptors(?) https://docs.opencv.org/3.0-beta/doc/py_tutorials/py_feature2d/py_surf_intro/py_surf_intro.html#surf-in-opencv
-		points, features = surf.detectAndCompute(imgB)
+		# Not sure why, but the values of the points found differs from the matlab and the python.
+		# For instance, matlab finds 2209 points where as the python finds 2977 points.
+		# The dimension are the same though. For points, it's n * 1 and for features it's n * 64.
+		# This is the extract features function.
+		points, features = surf.detectAndCompute(imgB, None)
+		featureImage = cv2.drawKeypoints(imgB, points, None)
 		# Creating 1-D matrix of tforms. Based on the matlab outputs, seems like affin2d and projective2d results are the same.
 		# I think the only difference is that the object type is different.
 		tforms = [0 for x in range(numOfFrames)]
