@@ -49,7 +49,7 @@ print(points[0].size)
 # tform = matplotlib.transforms.Affine2D(numpy.eye(3))
 # M = numpy.array(tform)
 # M = cv2.getPerspectiveTransform(gray, img)
-#M = numpy.float32([[1.0748, -0.0037, -77.8843], [0.0117, 1.0383, -0.3584], [7.8756 * 10**(-5), 2.8427* 10**(-5), 0.9957]])
+M = numpy.float32([[1.0748, -0.0037, -77.8843], [0.0117, 1.0383, -0.3584], [7.8756 * 10**(-5), 2.8427* 10**(-5), 0.9957]])
 
 #([[1.0748, 0.0117, 7.8756 * 10**(-5)], [-0.0037, 1.0383, 2.8427* 10**(-5)], [-77.8843, -0.3584, 0.9957]])
 
@@ -59,7 +59,10 @@ print(points[0].size)
 
 #print(M)
 
-warp = cv2.warpPerspective(img, M, (1561, 678))
+# warp = cv2.warpPerspective(img, M, (1561, 678))
+
+warpedImage = cv2.warpPerspective(numpy.ones(len(img)), M, (1561, 678))
+print(warpedImage)
 
 #plt.imshow(warp)
 

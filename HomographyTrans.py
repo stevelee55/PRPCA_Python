@@ -5,6 +5,7 @@ import cv2
 import matplotlib.transforms
 import matplotlib.pyplot as plt
 import time
+import math
 
 class HomographyTrans(object):
 
@@ -113,28 +114,69 @@ class HomographyTrans(object):
 			# second = [estimatePair[0][1], estimatePair[1][1], -0.63]
 			# third = [estimatePair[0][2], estimatePair[1][2], 0.9896]
 			tforms[n] = estimatePair #[estimatePair[0], estimatePair[1], numpy.array([0,0,1])]
-
+			# Estimate transform from frame A to frame B, and fit as an s-R-t
 			tforms[n] = numpy.matmul(tforms[n-1], tforms[n])
 
-			
-			#print(M)
+		# Getting the centerImageId.
+	# For now, set it to the half of the frame.
+		centerImageId = math.floor(numOfFrames / 2)
+
+
 
 		# This affects at which angle the panaroma is gonna be happening.
-		Tinv = numpy.linalg.inv(tforms[16])
+		Tinv = numpy.linalg.inv(tforms[centerImageId])
 
-			
+		# Centering the registered images for a specific image.		
 		for i in range(numOfFrames):
-
-			imgB = cv2.cvtColor(movmat[i], cv2.COLOR_BGR2GRAY)
-
+			# Recalculating the transformation matrix.
 			tforms[i] = numpy.matmul(Tinv, tforms[i])
+			# This is to get the frame move within the positive coordinates.
+			x_offset = 300
+			y_offset = 50
+			translateMatrix = [[1, 0, x_offset], [ 0, 1, y_offset],[0, 0, 1]]
+			tforms[i] = numpy.matmul(translateMatrix, tforms[i])
 
-			M = numpy.float32(tforms[i])
+			# imgB = movmat[i]
+			# M = numpy.float32(tforms[i])
+			# warp = cv2.warpPerspective(imgB, M, (1000, 500))
+			# plt.imshow(warp)
+			# plt.show()
 
-			warp = cv2.warpPerspective(imgB, M, (799, 288))
-			plt.imshow(warp, cmap="gray")
-			plt.show()
-			
+		# Skipping getting hte sizes for the panorama view since it has to be figured out.
+
+		height = 500
+		width = 1000 
+		Y = []
+		Mask = []
+
+		for i in range(len(tforms)):
+			if not isRGB:
+				imgB = movmat[i]
+				M = numpy.float32(tforms[i])
+				warpedImage = cv2.warpPerspective(imgB, M, (width, height))
+				# Column of Y are the frames and each row is pixels. Matlab says it's "vectorized"...?
+				Y[i] = warpedImage
+				# Getting the mask.
+				mask = cv2.warpPerspective(numpy.ones(len(imgB)), M, (width, height))
+				for z in range(len(mask)):
+					for j in range(len(mask[z])):
+						for k in range(len(mask[z][j])):
+							if (mask[z][j][k] != 0):
+								mask[z][j][k] = 1
+				Mask[i] = mask
+
+		T = tforms
+
+		return Y, Mask, height, width, T
+
+	#imgB = cv2.cvtColor(movmat[i], cv2.COLOR_BGR2GRAY)
+	# imgB = movmat[i]
+	# # This matters.
+	# tforms[i] = numpy.matmul(Tinv, tforms[i])
+	# M = numpy.float32(tforms[i])
+	# warp = cv2.warpPerspective(imgB, M, (799, 288))
+	# plt.imshow(warp)
+	# plt.show()
 
 
 
