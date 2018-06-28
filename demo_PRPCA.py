@@ -14,6 +14,7 @@ import os
 from imread import imread
 import matplotlib.pyplot as plt
 from skimage import transform
+import cv2
 
 # Classes
 from PRPCA_RGB import PRPCA_RGB
@@ -25,7 +26,7 @@ def HomographyTrans(movmat):
 
 ####### PRPCA_RGB
 instance = PRPCA_RGB()
-instance.parseInputs(2,3)
+#instance.parseInputs(2,3)
 
 
 #######################################################
@@ -78,7 +79,7 @@ for i in range(numberOfVideoFrames):
 	#For instance, 0.24117647 0.4372549  0.68431373 is for python, 0.2392, 0.4353, 0.6824 in matlab.
 	# In the Matlab code, the function imresize changes the values dramatically, but it is later fixed
 	#by the im2double. 
-	MovMat[i] = transform.resize(img, (newWidth, newHeight))
+	MovMat[i] = cv2.resize(img, None, fx=0.5, fy=0.5)
 
 	#Description
 	#example
@@ -98,7 +99,7 @@ print(len(NewMovMat))
 
 # RGB PRPCA
 # Getting the return value and saving them.
-RPCA_image, L, S, L_RPCA, S_RPCA = PRPCA_RGB(MovMat)
+RPCA_image, L, S, L_RPCA, S_RPCA = instance.PRPCA_RGB_Main(NewMovMat)
 
 
 # Showing the results visually.

@@ -21,15 +21,16 @@ class HomographyTrans(object):
 		return val
 
 	# Parsing inputs.
-	def parseInputs(self, otps):
+	def parseInputs(self, opts):
 		# Checking to see if opts and var exists and then creating something.
 		opts = struct
-
 		# I think isRGB is boolearn return type so I changed the third paramter from
 		# 1 to "True".
-		isRGB = parseField(opts, "isRGB", 0)
-		method = parseField(opts, "method", "numeric")
-		T = parseField(opts, "T", 1)
+		isRGB = self.parseField(opts, "isRGB", 0)
+		method = self.parseField(opts, "method", "numeric")
+		T = self.parseField(opts, "T", 1)
+
+		return isRGB, method, T
 
 	# Initializer for the this class' instance.
 	def __init__(self):
@@ -37,24 +38,26 @@ class HomographyTrans(object):
 
 
 	def HomographyTrans_Main(self, movmat, opts):
+		# Global Variables
+
 		# Parsing and getting and storing the opts values.
-		isRGB, method, T = parseInputs(opts)
+		isRGB, method, T = self.parseInputs(opts)
 
 		# In the matlab code, it checks to see if there is a "prior T", but it's not being used so
 		# here I am trying to write it without it.
 
 		# Reading in the first frame.
-		if (!isRGB):
+		if (not isRGB):
 			# I put 2 instead of 3 because python is 0-indexed.
-			numOfFrames = movmat.shape[2]
+			numOfFrames = len(movmat) #movmat.shape[3] ?
 			# Get only the first frame. This is probably because when
 			# the video is not RGB, then it is only 3-D.
 			imgB = movmat[0]
 		else:
 			# Not exactly sure what this returns but just going by the website: http://mathesaurus.sourceforge.net/matlab-numpy.html
-			numOfFrames = movmat.shape[3]
+			numOfFrames = len(movmat)
 			# Get only the first frame's gray color(?)
-			imgB = rgb2gray(movmat[0])
+			imgB = cv2.cvtColor(movmat[0], cv2.COLOR_BGR2GRAY) # Surf only works with this.
 
 		# Extract features points in the first frame.
 		# Use SURF first and then try to use others.
@@ -66,11 +69,12 @@ class HomographyTrans(object):
 		# The dimension are the same though. For points, it's n * 1 and for features it's n * 64.
 		# This is the extract features function.
 		points, features = surf.detectAndCompute(imgB, None)
-		featureImage = cv2.drawKeypoints(imgB, points, None)
+
+		#featureImage = cv2.drawKeypoints(imgB, points, None)
 		# Creating 1-D matrix of tforms. Based on the matlab outputs, seems like affin2d and projective2d results are the same.
 		# I think the only difference is that the object type is different.
-		tforms = [0 for x in range(numOfFrames)]
-		tforms[numOfFrames - 1] = matplotlib.transforms.Affine2D(numpy.eye(3))
+		tformObject = matplotlib.transforms.Affine2D(numpy.eye(3))
+		tforms = [tformObject for x in range(numOfFrames)]
 
 		# Repeating the above for every frame.
 		# Starting from the index 1 because the first frame has already been processed.
@@ -79,14 +83,23 @@ class HomographyTrans(object):
 			featuresPrevious = features
 
 			# Reading in the next frame.
-			if (!isRGB):
-				imgB = movmat[0]
+			if (not isRGB):
+				imgB = movmat[n]
 			else:
-				imgB = rgb2gray(movmat[0])
+				imgB = cv2.cvtColor(movmat[n], cv2.COLOR_BGR2GRAY)
 
-	# Temporary till figuring everyhing out.
-			points, features = points, features = surf.detectAndCompute(imgB)
-			indexPairs = match
+			points, features = surf.detectAndCompute(imgB, None)
+			# create BFMatcher object for feature matching.
+			bf = cv2.BFMatcher(cv2.NORM_L1,crossCheck=False)
+			# This means that queryIdx is features, and trainIdx is featuresPrevious.
+			# https://stackoverflow.com/questions/13318853/opencv-drawmatches-queryidx-and-trainidx/34380383
+			indexPairs = bf.match(features, featuresPrevious)
+			# Should be for looped.
+			# indexPairs[i].queryIdx gives index of points that were matched.
+			matchedPoints = [points[indexPairs[i].queryIdx] for i in range(len(indexPairs))]
+			print(matchedPoints[0].pt)
+			
+
 
 
 

@@ -1,5 +1,6 @@
 import struct
 import math
+from HomographyTrans import HomographyTrans
 
 class PRPCA_RGB(object):
 
@@ -34,11 +35,11 @@ class PRPCA_RGB(object):
 		# "max" is already built in python.
 		# Parameter for the LamS: Not sure what this really represents yet.
 		lamSParameter = 1 / math.sqrt(max(size(Y)))
-		LamS = parseField(opts, "LamS", lamSParameter)
+		LamS = self.parseField(opts, "LamS", lamSParameter)
 		# The third parameter is "100", but see if it can be changed and see what it affects.
 		# It may be like the 35 frame limit, which was to run the code pretty fast by only using the
 		# 35 frames.
-		nIters = parseField(opts, "nIters", 100)
+		nIters = self.parseField(opts, "nIters", 100)
 
 		return LamS, nIters
 
@@ -52,8 +53,8 @@ class PRPCA_RGB(object):
 
 		# I think isRGB is boolearn return type so I changed the third paramter from
 		# 1 to "True".
-		isRGB = parseField(opts, "isRGB", True)
-		method = parseField(opts, "method", "numeric")
+		isRGB = self.parseField(opts, "isRGB", True)
+		method = self.parseField(opts, "method", "numeric")
 
 		return isRGB, method
 		
@@ -61,25 +62,26 @@ class PRPCA_RGB(object):
 	def PRPCA_RGB_Main(self, movmat):
 
 		# Took out varagin{:} since it's matlab notation for "Any arguement"
-		isRGB, method = parseInputs2()
+		isRGB, method = self.parseInputs2()
 		# Creating a struct to hold the above-returned values.
 		optsHT = struct
 		optsHT.isRGB = isRGB
 		optsHT.method = method
 
 		# Homography transformation
-		Y, Mask, height, width, T = HomographyTrans(movmat)
+		homographyTransInstance = HomographyTrans()
+		Y, Mask, height, width, T = homographyTransInstance.HomographyTrans_Main(movmat, optsHT)
 
 		# Parse inputs.
 		# Took out varagin{:} since it's matlab notation for "Any arguement"
-		LamS, nIters = parseInputs(Y)
+		LamS, nIters = self.parseInputs(Y)
 
 		# Calculating meaningful region for boosting (?)
-		m = any(Mask,2)
-		Ytil = Y(m,:)
-		Mtil = Mask(m,:)
+		# m = any(Mask,2)
+		# Ytil = Y(m,:)
+		# Mtil = Mask(m,:)
 
-		# RPCA
-		opts.M = Mtil
+		# # RPCA
+		# opts.M = Mtil
 
 		return "hello world", [2,3], "yay", "123", 3
