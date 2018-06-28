@@ -119,7 +119,7 @@ class HomographyTrans(object):
 			
 			#print(M)
 
-
+		# This affects at which angle the panaroma is gonna be happening.
 		Tinv = numpy.linalg.inv(tforms[16])
 
 			
@@ -131,7 +131,7 @@ class HomographyTrans(object):
 
 			M = numpy.float32(tforms[i])
 
-			warp = cv2.warpPerspective(imgB, M, (427, 240))
+			warp = cv2.warpPerspective(imgB, M, (799, 288))
 			plt.imshow(warp, cmap="gray")
 			plt.show()
 			
