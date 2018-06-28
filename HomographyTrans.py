@@ -3,6 +3,8 @@ import struct
 from skimage.color import rgb2gray
 import cv2
 import matplotlib.transforms
+import matplotlib.pyplot as plt
+import time
 
 class HomographyTrans(object):
 
@@ -90,14 +92,48 @@ class HomographyTrans(object):
 
 			points, features = surf.detectAndCompute(imgB, None)
 			# create BFMatcher object for feature matching.
-			bf = cv2.BFMatcher(cv2.NORM_L1,crossCheck=False)
+			bf = cv2.BFMatcher(cv2.NORM_L1,crossCheck=True)
 			# This means that queryIdx is features, and trainIdx is featuresPrevious.
 			# https://stackoverflow.com/questions/13318853/opencv-drawmatches-queryidx-and-trainidx/34380383
 			indexPairs = bf.match(features, featuresPrevious)
 			# Should be for looped.
 			# indexPairs[i].queryIdx gives index of points that were matched.
 			matchedPoints = [points[indexPairs[i].queryIdx] for i in range(len(indexPairs))]
-			print(matchedPoints[0].pt)
+			numpyArrayMatchedPoints = numpy.array([matchedPoints[i].pt for i in range(len(matchedPoints))])
+			# matchedPoints have the KeyPoint objects, which an be accesesd by index and .pt.
+			# print(matchedPoints[0].pt)
+			matchedPointsPrev = [pointsPrevious[indexPairs[i].trainIdx] for i in range(len(indexPairs))]
+			numpyArrayMatchedPointsPrev = numpy.array([matchedPointsPrev[i].pt for i in range(len(matchedPointsPrev))])
+			# Estimating geometric transform.
+			# Not sure what the Affine = Bool does.
+			estimatePair, status = cv2.findHomography(numpyArrayMatchedPoints, numpyArrayMatchedPointsPrev,cv2.RANSAC,5.0) #cv2.estimateRigidTransform(numpyArrayMatchedPoints, numpyArrayMatchedPointsPrev, True)
+			print(estimatePair)
+			#print(status)
+			# first = [estimatePair[0][0], estimatePair[1][0], 91.59]
+			# second = [estimatePair[0][1], estimatePair[1][1], -0.63]
+			# third = [estimatePair[0][2], estimatePair[1][2], 0.9896]
+			tforms[n] = estimatePair #[estimatePair[0], estimatePair[1], numpy.array([0,0,1])]
+
+			tforms[n] = numpy.matmul(tforms[n-1], tforms[n])
+
+			
+			#print(M)
+
+
+		Tinv = numpy.linalg.inv(tforms[16])
+
+			
+		for i in range(numOfFrames):
+
+			imgB = cv2.cvtColor(movmat[i], cv2.COLOR_BGR2GRAY)
+
+			tforms[i] = numpy.matmul(Tinv, tforms[i])
+
+			M = numpy.float32(tforms[i])
+
+			warp = cv2.warpPerspective(imgB, M, (427, 240))
+			plt.imshow(warp, cmap="gray")
+			plt.show()
 			
 
 
