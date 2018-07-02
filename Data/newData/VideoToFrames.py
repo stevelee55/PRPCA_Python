@@ -2,7 +2,7 @@ import cv2
 import math
 print(cv2.__version__)
 
-vidcap = cv2.VideoCapture("test.MOV")
+vidcap = cv2.VideoCapture("moving.MOV")
 frameRate = 3
 #vidcap.set(cv2.CAP_PROP_POS_MSEC,20000)
 success,image = vidcap.read()

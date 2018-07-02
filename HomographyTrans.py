@@ -9,6 +9,9 @@ import math
 
 class HomographyTrans(object):
 
+	# Function that finds x and y limits of the panaroma.
+	def outputLimits(tform, ):
+		print("")
 
 	# Function that parses struct field
 	# Function that parses struct field
@@ -108,7 +111,7 @@ class HomographyTrans(object):
 			# Estimating geometric transform.
 			# Not sure what the Affine = Bool does.
 			estimatePair, status = cv2.findHomography(numpyArrayMatchedPoints, numpyArrayMatchedPointsPrev,cv2.RANSAC,5.0) #cv2.estimateRigidTransform(numpyArrayMatchedPoints, numpyArrayMatchedPointsPrev, True)
-			print(estimatePair)
+			#print(estimatePair)
 			#print(status)
 			# first = [estimatePair[0][0], estimatePair[1][0], 91.59]
 			# second = [estimatePair[0][1], estimatePair[1][1], -0.63]
@@ -116,6 +119,7 @@ class HomographyTrans(object):
 			tforms[n] = estimatePair #[estimatePair[0], estimatePair[1], numpy.array([0,0,1])]
 			# Estimate transform from frame A to frame B, and fit as an s-R-t
 			tforms[n] = numpy.matmul(tforms[n-1], tforms[n])
+
 
 		# Getting the centerImageId.
 	# For now, set it to the half of the frame.
@@ -131,16 +135,20 @@ class HomographyTrans(object):
 			# Recalculating the transformation matrix.
 			tforms[i] = numpy.matmul(Tinv, tforms[i])
 			# This is to get the frame move within the positive coordinates.
+			# pos-x makes it go right, pos-y makes it go down.
 			x_offset = 300
 			y_offset = 50
 			translateMatrix = [[1, 0, x_offset], [ 0, 1, y_offset],[0, 0, 1]]
 			tforms[i] = numpy.matmul(translateMatrix, tforms[i])
 
-			# imgB = movmat[i]
-			# M = numpy.float32(tforms[i])
-			# warp = cv2.warpPerspective(imgB, M, (1000, 500))
-			# plt.imshow(warp)
-			# plt.show()
+			imgB = movmat[i]
+			M = numpy.float32(tforms[i])
+			warp = cv2.warpPerspective(imgB, M, (1000, 500))
+			plt.imshow(warp)
+			plt.show()
+
+		print("hello", tforms[0])
+		print(tforms[34])
 
 		# Skipping getting hte sizes for the panorama view since it has to be figured out.
 
