@@ -144,33 +144,67 @@ class HomographyTrans(object):
 			imgB = movmat[i]
 			M = numpy.float32(tforms[i])
 			warp = cv2.warpPerspective(imgB, M, (1000, 500))
-			plt.imshow(warp)
-			plt.show()
+			# plt.imshow(warp)
+			# plt.show()
 
-		print("hello", tforms[0])
-		print(tforms[34])
+		# print("hello", tforms[0])
+		# print(tforms[34])
 
 		# Skipping getting hte sizes for the panorama view since it has to be figured out.
 
 		height = 500
 		width = 1000 
-		Y = []
-		Mask = []
+		size = height * width * 3
+		print(size) 
+		Y = [[None] * size] * len(tforms)
+		Mask = [[None] * size] * len(tforms)
 
 		for i in range(len(tforms)):
-			if not isRGB:
+			if isRGB:
 				imgB = movmat[i]
 				M = numpy.float32(tforms[i])
 				warpedImage = cv2.warpPerspective(imgB, M, (width, height))
+				# This is what im2double does.
+				warpedImage = cv2.normalize(warpedImage.astype('float'), None, 0.0, 1.0, cv2.NORM_MINMAX)
+
+				# Getting the pixel values for each col for each row for each number
+				# Going through the x3.
+				counter = 0
+				print(len(warpedImage[0][0]))
+				print(len(warpedImage[0]))
+				print(len(warpedImage))
+				for j in range(len(warpedImage[0][0])):
+					# Going through the width.
+					for k in range(len(warpedImage[0])):
+						# Going through the height.
+						for z in range(len(warpedImage)):
+						# This is where the Y is initialized.
+							Y[i][counter] = warpedImage[z][k][j]
+							#print(Y[counter])
+							counter+=1
+							
+				print("hello")
+				print("What's this", len(warpedImage)) # 500 Height = column
 				# Column of Y are the frames and each row is pixels. Matlab says it's "vectorized"...?
-				Y[i] = warpedImage
 				# Getting the mask.
-				mask = cv2.warpPerspective(numpy.ones(len(imgB)), M, (width, height))
-				for z in range(len(mask)):
-					for j in range(len(mask[z])):
-						for k in range(len(mask[z][j])):
-							if (mask[z][j][k] != 0):
-								mask[z][j][k] = 1
+				s = ((len(imgB), len(imgB[0]), len(imgB[0][0])))
+				# Same dimension as the Y. 3 by 1000 by 500.
+				mask = cv2.warpPerspective(numpy.ones(s), M, (width, height))
+				print(len(mask))
+				print(len(mask[0]))
+				print(len(mask[0][0]))
+
+				counter = 0
+				# Going through the x3.
+				for j in range(len(warpedImage[0][0])):
+					# Going through the width.
+					for k in range(len(warpedImage[0])):
+						# Going through the height.
+						for z in range(len(warpedImage)):
+							if (mask[z][k][j] != 0):
+								 mask[z][k][j] = 1
+
+
 				Mask[i] = mask
 
 		T = tforms

@@ -11,6 +11,14 @@ import matplotlib.transforms
 
 img = imread("Data/newData/Test_Grace/frame1.jpg") #, cv2.IMREAD_GRAYSCALE)
 
+print(img)
+
+
+normImage = cv2.normalize(img.astype('float'), None, 0.0, 1.0, cv2.NORM_MINMAX)
+
+plt.imshow(normImage)
+plt.show()
+
 width = len(img)
 height = len(img[0])
 print("height", height)
