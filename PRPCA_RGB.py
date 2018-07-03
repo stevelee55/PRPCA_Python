@@ -113,9 +113,10 @@ class PRPCA_RGB(object):
 		opts.M = Mtil
 		opts.maxIters = nIters
 		improvedRobustPCAInstance = improvedRobustPCA()
-		Ltil, Stil = improvedRobustPCA(Ytil, 1, LamS, opts)
+		Ltil, Stil = improvedRobustPCAInstance.improvedRobustPCA_Main(Ytil, 1, LamS, opts)
 
-
+		print(Ltil)
+		print(Stil)
 
 
 		return "hello world", [2,3], "yay", "123", 3

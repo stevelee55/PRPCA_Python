@@ -14,7 +14,6 @@ class HomographyTrans(object):
 		print("")
 
 	# Function that parses struct field
-	# Function that parses struct field
 	def parseField(self, stats, field, default):
 		# Value to return from the function.
 		val = None
@@ -29,7 +28,7 @@ class HomographyTrans(object):
 	# Parsing inputs.
 	def parseInputs(self, opts):
 		# Checking to see if opts and var exists and then creating something.
-		opts = struct
+		#opts = struct
 		# I think isRGB is boolearn return type so I changed the third paramter from
 		# 1 to "True".
 		isRGB = self.parseField(opts, "isRGB", 0)

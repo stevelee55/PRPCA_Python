@@ -105,27 +105,31 @@ newHeight = abs((771.57) - (-300))
 print(newWidth)
 print(newHeight)
 
-# Changing height.
-translateMatrix = [[1, 0, 300], [ 0, 1, 300],[0, 0, 1]]
+A = [1]
+n = cv2.normalize(A.astype('float'), None, 0.0, 1.0, cv2.NORM_MINMAX)
+print(n)
 
-# OG
-plt.imshow(img)
-plt.show()
+# # Changing height.
+# translateMatrix = [[1, 0, 300], [ 0, 1, 300],[0, 0, 1]]
 
-# non translated
-warp = cv2.warpPerspective(img, M, (int(newWidth), int(newHeight)))
-#x, y, z, h = cv2.boundingRect(warp)
+# # OG
+# plt.imshow(img)
+# plt.show()
 
-plt.imshow(warp)
-plt.show()
+# # non translated
+# warp = cv2.warpPerspective(img, M, (int(newWidth), int(newHeight)))
+# #x, y, z, h = cv2.boundingRect(warp)
 
-# Translated 
-M = numpy.matmul(translateMatrix, M)
-warp = cv2.warpPerspective(img, M, (int(newWidth), int(newHeight)))
-#x, y, z, h = cv2.boundingRect(warp)
+# plt.imshow(warp)
+# plt.show()
 
-plt.imshow(warp)
-plt.show()
+# # Translated 
+# M = numpy.matmul(translateMatrix, M)
+# warp = cv2.warpPerspective(img, M, (int(newWidth), int(newHeight)))
+# #x, y, z, h = cv2.boundingRect(warp)
+
+# plt.imshow(warp)
+# plt.show()
 
 
 
