@@ -1,6 +1,7 @@
 import struct
 import math
 from HomographyTrans import HomographyTrans
+from improvedRobustPCA import improvedRobustPCA
 import numpy
 
 class PRPCA_RGB(object):
@@ -82,24 +83,39 @@ class PRPCA_RGB(object):
 		# Calculating meaningful region for boosting (?)
 		
 		print(len(Mask[0]))
+		print(len(Mask))
 		print(len(Y[0]))
 		print(len(T))
 
-		m = numpy.any(Mask, axis=0)
-		print("m:", len(m))
+		# m = numpy.any(Mask, axis=1)
+		# print("m:", len(m))
 		# # m = any(Mask,2)
 
 		Ytil = []
 		Mtil = []
-		for i in range(len(m)):
-			if (m[i] == 1):
-				Ytil.append(Y[i])
-				Mtil.append(M[i])
 
-		print("Ytil:", len(Ytil))
-		print("Mtil:", len(Mtil))
+		
+
+		for i in range(len(Mask)):
+			for j in range(len(Mask[0])):
+				if (Mask[i][j] == int(1)):
+					Ytil.append(Y[i])
+					Mtil.append(Mask[i])
+					break
+
+		# print("Ytil:", len(Ytil))
+		# print(Ytil)
+		# print("Mtil:", len(Mtil))
+		# print(len(Mask))
 
 		# RPCA
+		opts = struct
 		opts.M = Mtil
+		opts.maxIters = nIters
+		improvedRobustPCAInstance = improvedRobustPCA()
+		Ltil, Stil = improvedRobustPCA(Ytil, 1, LamS, opts)
+
+
+
 
 		return "hello world", [2,3], "yay", "123", 3

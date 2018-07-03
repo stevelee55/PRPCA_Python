@@ -43,7 +43,7 @@ instance = PRPCA_RGB()
 
 # Gets the list of names of the frames along with the
 # number of total frames.
-contents = os.listdir("./Data/newData/CorruptedClip")
+contents = os.listdir("./Data/tennis")
 contents.sort()
 # Getting only the ones that have the certain extension.
 # In this case, only .jpg
@@ -55,7 +55,7 @@ for content in contents:
 numberOfVideoFrames = len(videoFrames)
 
 # Getting the new width and height for the video frame.
-img = imread("Data/newData/CorruptedClip/frame1.jpg")
+img = imread("Data/tennis/00000.jpg")
 # Shorter. i.e: 480
 height = len(img)
 # Longer. i.e: 854
@@ -72,7 +72,7 @@ MovMat = [[[[0 for x in range(height)] for y in range(width)] for m in range(RGB
 # frame and sets it to the MovMat.
 for i in range(numberOfVideoFrames):
 	# Getting the specific frame and saving in the 4-D array.
-	img = imread("./Data/newData/CorruptedClip/" + "frame" + str(i + 1) + ".jpg") #videoFrames[i])
+	img = imread("./Data/tennis/" + videoFrames[i]) #newData/CorruptedClip/" + "frame" + str(i + 1) + ".jpg")
 	# The interesting thing about this code is that when it resizes, it does the "im2double" automatically.
 	# Still quiet don't understand why "im2double" is needed in the Matlab code.
 	# One thing to keep in mind that the pixel values are differ by very little when the values are compared.
@@ -80,7 +80,7 @@ for i in range(numberOfVideoFrames):
 	# In the Matlab code, the function imresize changes the values dramatically, but it is later fixed
 	#by the im2double.
 	# cv2.resize doesn't do im2double automatically so normalizing needs to be done later.
-	MovMat[i] = cv2.resize(img, None, fx=0.3, fy=0.3)
+	MovMat[i] = cv2.resize(img, None, fx=0.5, fy=0.5)
 
 	#Description
 	#example

@@ -224,17 +224,17 @@ class HomographyTrans(object):
 			translateMatrix = [[1, 0, x_offset], [ 0, 1, y_offset],[0, 0, 1]]
 			tforms[i] = numpy.matmul(translateMatrix, tforms[i])
 
-			imgB = movmat[i]
-			M = numpy.float32(tforms[i])
-			warp = cv2.warpPerspective(imgB, M, (width, height))
-			plt.imshow(warp)
-			plt.show()
+			# imgB = movmat[i]
+			# M = numpy.float32(tforms[i])
+			# warp = cv2.warpPerspective(imgB, M, (width, height))
+			# plt.imshow(warp)
+			# plt.show()
 
 		numOfPoints = height * width * 3
 		print(numOfPoints)
 		# Y is accessed by Y[frame #][points]
-		Y = [[None] * len(tforms)] * numOfPoints
-		Mask = [[None] * len(tforms)] * numOfPoints
+		Y = [[0 for i in range(len(tforms))] for j in range(numOfPoints)]
+		Mask = [[0 for i in range(len(tforms))] for j in range(numOfPoints)]
 
 		for i in range(len(tforms)):
 			if isRGB:
@@ -271,8 +271,9 @@ class HomographyTrans(object):
 				# print(len(mask))
 				# print(len(mask[0]))
 				# print(len(mask[0][0]))
-
+				
 				counter = 0
+				# May not need * 3 since it's rgb
 				# Going through the x3.
 				for j in range(len(mask[0][0])):
 					# Going through the width.
@@ -281,8 +282,11 @@ class HomographyTrans(object):
 						for z in range(len(mask)):
 							if (mask[z][k][j] != 0):
 								 mask[z][k][j] = 1
-								 Mask[counter][i] = mask
-								 counter+=1
+								 Mask[counter][i] = 1
+							counter+=1
+
+				print(Mask[1])
+				print("BHAHAHHAS")
 
 
 		print("Homography Complete")
