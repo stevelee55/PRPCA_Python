@@ -125,39 +125,116 @@ class HomographyTrans(object):
 	# For now, set it to the half of the frame.
 		centerImageId = math.floor(numOfFrames / 2)
 
+		# This affects at which angle the panaroma is gonna be happening.
+		Tinv = numpy.linalg.inv(tforms[centerImageId])
+		# Centering the registered images for a specific image.		
+		for i in range(numOfFrames):
+			# Recalculating the transformation matrix.
+			tforms[i] = numpy.matmul(Tinv, tforms[i])
 
+
+
+		# Calculating panorama dimensions.
+		frameHeight = len(movmat[0])
+		frameWidth = len(movmat[0][0])
+		print(frameHeight)
+		print(frameWidth)
+		# Getting the panorama size.
+		xlim = []
+		ylim = []
+
+		# Getting center image's offset points for x and y.
+		estimateMatrix = numpy.float32(tforms[centerImageId])
+		# Resetting the values.
+		pt1 = numpy.array([0,0,1])
+		pt2 = numpy.array([0,frameHeight,1])
+		pt3 = numpy.array([frameWidth,frameHeight,1])
+		pt4 = numpy.array([frameWidth,0,1])
+		# Transforming the cornor points.
+		pt1 = numpy.matmul(estimateMatrix, pt1)
+		pt2 = numpy.matmul(estimateMatrix, pt2)
+		pt3 = numpy.matmul(estimateMatrix, pt3)
+		pt4 = numpy.matmul(estimateMatrix, pt4)
+
+		xlim.extend([(pt1[0] / pt1[2]), (pt2[0] / pt2[2]), (pt3[0] / pt3[2]), (pt4[0] / pt4[2])])
+		ylim.extend([(pt1[1] / pt1[2]), (pt2[1] / pt2[2]), (pt3[1] / pt3[2]), (pt4[1] / pt4[2])])
+
+		offsetxMin = min(xlim)
+		offsetxMax = max(xlim)
+		offsetyMin = min(ylim)
+		offsetyMax = max(ylim)
+
+
+		# Getting the x and y limits of each of the frames.
+		for i in range(len(tforms)):
+			estimateMatrix = numpy.float32(tforms[i])
+			# Resetting the values.
+			pt1 = numpy.array([0,0,1])
+			pt2 = numpy.array([0,frameHeight,1])
+			pt3 = numpy.array([frameWidth,frameHeight,1])
+			pt4 = numpy.array([frameWidth,0,1])
+			# Transforming the cornor points.
+			pt1 = numpy.matmul(estimateMatrix, pt1)
+			pt2 = numpy.matmul(estimateMatrix, pt2)
+			pt3 = numpy.matmul(estimateMatrix, pt3)
+			pt4 = numpy.matmul(estimateMatrix, pt4)
+
+			xlim.extend([(pt1[0] / pt1[2]), (pt2[0] / pt2[2]), (pt3[0] / pt3[2]), (pt4[0] / pt4[2])])
+			ylim.extend([(pt1[1] / pt1[2]), (pt2[1] / pt2[2]), (pt3[1] / pt3[2]), (pt4[1] / pt4[2])])
+
+			# print(i)
+			# print(pt1)
+			# print(pt2)
+			# print(pt3)
+			# print(pt4)
+
+		# print(xlim)
+		# print(ylim)
+
+		xMin = min(xlim)
+		xMax = max(xlim)
+		yMin = min(ylim)
+		yMax = max(ylim)
+
+		# print(xMin)
+		# print(yMin)
+		# print(xMax)
+		# print(yMax)
+
+		width = int(xMax - xMin)
+		height = int(yMax - yMin)
+
+		print("Calculated")
+		print(width)
+		print(height)
 
 		# This affects at which angle the panaroma is gonna be happening.
 		Tinv = numpy.linalg.inv(tforms[centerImageId])
 
 		# Centering the registered images for a specific image.		
 		for i in range(numOfFrames):
+
 			# Recalculating the transformation matrix.
 			tforms[i] = numpy.matmul(Tinv, tforms[i])
+			
 			# This is to get the frame move within the positive coordinates.
 			# pos-x makes it go right, pos-y makes it go down.
-			x_offset = 300
-			y_offset = 50
+			x_offset = -offsetxMin + -xMin
+			y_offset = offsetyMin + -yMin
 			translateMatrix = [[1, 0, x_offset], [ 0, 1, y_offset],[0, 0, 1]]
 			tforms[i] = numpy.matmul(translateMatrix, tforms[i])
 
 			imgB = movmat[i]
 			M = numpy.float32(tforms[i])
-			warp = cv2.warpPerspective(imgB, M, (1000, 500))
-			# plt.imshow(warp)
-			# plt.show()
+			warp = cv2.warpPerspective(imgB, M, (width, height))
+			plt.imshow(warp)
+			plt.show()
 
-		# print("hello", tforms[0])
-		# print(tforms[34])
-
-		# Skipping getting hte sizes for the panorama view since it has to be figured out.
-
-		height = 500
-		width = 1000 
-		size = height * width * 3
-		print(size) 
-		Y = [[None] * size] * len(tforms)
-		Mask = [[None] * size] * len(tforms)
+		numOfPoints = height * width * 3
+		print(numOfPoints)
+		# Y is accessed by Y[frame #][points]
+		Y = [[None] * len(tforms)] * numOfPoints
+		Mask = [[None] * len(tforms)] * numOfPoints
 
 		for i in range(len(tforms)):
 			if isRGB:
@@ -168,45 +245,47 @@ class HomographyTrans(object):
 				warpedImage = cv2.normalize(warpedImage.astype('float'), None, 0.0, 1.0, cv2.NORM_MINMAX)
 
 				# Getting the pixel values for each col for each row for each number
-				# Going through the x3.
 				counter = 0
-				print(len(warpedImage[0][0]))
-				print(len(warpedImage[0]))
-				print(len(warpedImage))
-				for j in range(len(warpedImage[0][0])):
+				# # RGB: 3.
+				# print(len(warpedImage[0][0]))
+				# # Width: Larger.
+				# print(len(warpedImage[0]))
+				# # Height: Smaller.
+				# print(len(warpedImage))
+				# RGB dimension. Going through the x3.
+				for r in range(len(warpedImage[0][0])):
 					# Going through the width.
-					for k in range(len(warpedImage[0])):
+					for w in range(len(warpedImage[0])):
 						# Going through the height.
-						for z in range(len(warpedImage)):
-						# This is where the Y is initialized.
-							Y[i][counter] = warpedImage[z][k][j]
+						for h in range(len(warpedImage)):
+						# This is where the Y is initialized, which is 
+							Y[counter][i] = warpedImage[h][w][r]
 							#print(Y[counter])
 							counter+=1
 							
-				print("hello")
-				print("What's this", len(warpedImage)) # 500 Height = column
 				# Column of Y are the frames and each row is pixels. Matlab says it's "vectorized"...?
 				# Getting the mask.
-				s = ((len(imgB), len(imgB[0]), len(imgB[0][0])))
-				# Same dimension as the Y. 3 by 1000 by 500.
-				mask = cv2.warpPerspective(numpy.ones(s), M, (width, height))
-				print(len(mask))
-				print(len(mask[0]))
-				print(len(mask[0][0]))
+				dimension = numpy.array(warpedImage).shape
+				# print(dimension)
+				mask = cv2.warpPerspective(numpy.ones(dimension), M, (width, height))
+				# print(len(mask))
+				# print(len(mask[0]))
+				# print(len(mask[0][0]))
 
 				counter = 0
 				# Going through the x3.
-				for j in range(len(warpedImage[0][0])):
+				for j in range(len(mask[0][0])):
 					# Going through the width.
-					for k in range(len(warpedImage[0])):
+					for k in range(len(mask[0])):
 						# Going through the height.
-						for z in range(len(warpedImage)):
+						for z in range(len(mask)):
 							if (mask[z][k][j] != 0):
 								 mask[z][k][j] = 1
+								 Mask[counter][i] = mask
+								 counter+=1
 
 
-				Mask[i] = mask
-
+		print("Homography Complete")
 		T = tforms
 
 		return Y, Mask, height, width, T

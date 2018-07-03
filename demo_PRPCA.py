@@ -56,17 +56,17 @@ numberOfVideoFrames = len(videoFrames)
 
 # Getting the new width and height for the video frame.
 img = imread("Data/tennis/00000.jpg")
-# print(img)
-# print(img[0][0][0])
-width = len(img)
-height = len(img[0])
-newWidth = float(width * 0.5)
+# Shorter. i.e: 480
+height = len(img)
+# Longer. i.e: 854
+width = len(img[0])
 newHeight = float(height * 0.5)
+newWidth = float(width * 0.5)
 
 # Initializing the 4-D Matrix with 0 values.
-# Apparently the matrix is width * height * 3 * # of frames of the video.
-mys = 3
-MovMat = [[[[0 for x in range(width)] for y in range(height)] for m in range(mys)] for z in range(numberOfVideoFrames)]
+# Apparently the matrix is height * width * 3 * # of frames of the video.
+RGB = 3
+MovMat = [[[[0 for x in range(height)] for y in range(width)] for m in range(RGB)] for z in range(numberOfVideoFrames)]
 
 # This is 0-Indexed Matrix. Goes through every single
 # frame and sets it to the MovMat.
@@ -78,7 +78,8 @@ for i in range(numberOfVideoFrames):
 	# One thing to keep in mind that the pixel values are differ by very little when the values are compared.
 	#For instance, 0.24117647 0.4372549  0.68431373 is for python, 0.2392, 0.4353, 0.6824 in matlab.
 	# In the Matlab code, the function imresize changes the values dramatically, but it is later fixed
-	#by the im2double. 
+	#by the im2double.
+	# cv2.resize doesn't do im2double automatically so normalizing needs to be done later.
 	MovMat[i] = cv2.resize(img, None, fx=0.5, fy=0.5)
 
 	#Description
@@ -86,12 +87,14 @@ for i in range(numberOfVideoFrames):
 	#B = imresize(A,scale) returns image B that is scale times the size of A. The input image A can be a grayscale, RGB, or binary image. If A has more than two dimensions, imresize only resizes the first two dimensions. If scale is in the range [0, 1], B is smaller than A. If scale is greater than 1, B is larger than A. By default, imresize uses bicubic interpolation.
 
 
+# Needs to be less than or equal to the numberOfVideoFrames.
+numberOfFramesToUse = 35
 #Getting the certain number of frames for the computation.
-NewMovMat = [[[[0 for x in range(width)] for y in range(height)] for m in range(mys)] for z in range(35)]
-for i in range(35):
+NewMovMat = [[[[0 for x in range(height)] for y in range(width)] for m in range(RGB)] for z in range(numberOfFramesToUse)]
+for i in range(numberOfFramesToUse):
 	NewMovMat[i] = MovMat[i]
 #Size should be 35.
-print(len(NewMovMat))
+#print(len(NewMovMat))
 
 # These are used to present and show the imported image.
 #plt.imshow(img)

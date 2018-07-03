@@ -1,6 +1,7 @@
 import struct
 import math
 from HomographyTrans import HomographyTrans
+import numpy
 
 class PRPCA_RGB(object):
 
@@ -34,7 +35,9 @@ class PRPCA_RGB(object):
 		# the part "1 / sqrt(max(size(Y))" is the one that I could pass in infinity I think. Check on this.
 		# "max" is already built in python.
 		# Parameter for the LamS: Not sure what this really represents yet.
-		lamSParameter = 1 / math.sqrt(max(size(Y)))
+		# Y dimension.
+		Ydimension = numpy.array(Y).shape
+		lamSParameter = 1 / math.sqrt(max(Ydimension))
 		LamS = self.parseField(opts, "LamS", lamSParameter)
 		# The third parameter is "100", but see if it can be changed and see what it affects.
 		# It may be like the 35 frame limit, which was to run the code pretty fast by only using the
@@ -77,11 +80,26 @@ class PRPCA_RGB(object):
 		LamS, nIters = self.parseInputs(Y)
 
 		# Calculating meaningful region for boosting (?)
-		# m = any(Mask,2)
-		# Ytil = Y(m,:)
-		# Mtil = Mask(m,:)
+		
+		print(len(Mask[0]))
+		print(len(Y[0]))
+		print(len(T))
 
-		# # RPCA
-		# opts.M = Mtil
+		m = numpy.any(Mask, axis=0)
+		print("m:", len(m))
+		# # m = any(Mask,2)
+
+		Ytil = []
+		Mtil = []
+		for i in range(len(m)):
+			if (m[i] == 1):
+				Ytil.append(Y[i])
+				Mtil.append(M[i])
+
+		print("Ytil:", len(Ytil))
+		print("Mtil:", len(Mtil))
+
+		# RPCA
+		opts.M = Mtil
 
 		return "hello world", [2,3], "yay", "123", 3
