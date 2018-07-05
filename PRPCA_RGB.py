@@ -119,5 +119,18 @@ class PRPCA_RGB(object):
 		print(Ltil)
 		print(Stil)
 
+		# Embedding.
+		Y = numpy.array(Y)
+		Lhat = numpy.zeros(Y.shape)
+		Lhat[m][:] = Ltil
+		Shat = numpy.zeros(Y.shape)
+		Shat[m][:] = Stil
+
+		L_RPCA = numpy.reshape(Lhat, )
 
 		return "hello world", [2,3], "yay", "123", 3
+
+
+
+
+
