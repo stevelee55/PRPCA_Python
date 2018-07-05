@@ -10,12 +10,19 @@ from skimage.color import rgb2gray
 import matplotlib.transforms
 
 A = [[1, 2], [3, 4], [5, 6], [7, 8]]
+B = [2,3,4,5]
 # U,S,V = numpy.linalg.svd(A, full_matrices=False)
 # print(U)
 # print(S)
 # print(V)
-New = (numpy.array([1]) - numpy.array(A))
-print(New)
+# New = (numpy.array([1]) - numpy.array(A))
+# print(New)
+
+#arr = numpy.zeros((649446 - 35))
+print(numpy.array(B).shape)
+arrtrans = numpy.array(1 / B) #numpy.transpose(numpy.array([B]))
+print(arrtrans)
+print(arrtrans.shape)
 
 # img = imread("Data/newData/Test_Grace/frame1.jpg") #, cv2.IMREAD_GRAYSCALE)
 

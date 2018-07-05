@@ -1,76 +1,108 @@
 import numpy
 
-class OptShrink(object):
+#class OptShrink(object):
 
 
-	# Data-Driven estimate of optimal shrinkage.
-	# See Algorithm 1 of [1] for details.
-	def optimalShrinkage(s, m, n, r):
-		# Parse inputs.
-		q = min(m, n)
+# Data-Driven estimate of optimal shrinkage.
+# See Algorithm 1 of [1] for details.
+def optimalShrinkage(s, m, n, r):
+	# Parse inputs.
+	q = min(m, n)
+	# Signal singular values.
+	# It's getting the very first value.
+	# print(s)
+	# This means get the elements from 0 - r (r not included) and it doesn't do anything
+	# if I just leave it 0 - 0.
+	ss = s[0:r + 1]
+	# print(ss)
 
-		# Signal singular values.
-		# It's getting the very first value.
-		ss = s[0][r]
+	# Noise singular values.
+	# The left of : is included so r + 1 is used and q isn't included so I used q + 1.
+	sn2 = numpy.power(s[r + 1:q + 1], 2) # Column Vector.
+	# print(len(sn2))
+	# print(m)
+	# print(q)
+	pressH = numpy.append(sn2, numpy.zeros((m - q)))
+	# print(pressH)
+	# print(len(pressH))
+	# print(pressH.shape)
+	# Doesn't transposes because it's 1D so just try manually doing it.
+	ssH = numpy.array([pressH]) #numpy.transpose(pressH) # Test this. Row vector.
+	# print(len(ssH))
+	# print("SSH",ssH)
+	presHs = numpy.append(sn2, numpy.zeros((n - q)))
+	sHs = numpy.array([presHs]) #numpy.transpose(presHs)
 
-		# Noise singular values.
-		sn2 = numpy.power(s[r + 1][q], 2) # Column Vector.
-		pressH = [sn2, numpy.zeros(m - q, 1)]
-		ssH = pressH.getH() # Test this. Row vector.
-		presHs = [sn2, numpy.zeros(n - q, 1)]
-		sHs = presHs.getH()
+	ss2 = numpy.power(ss, 2)
+	# "Broadcasting in Matlab has to be done in a specific way, where as in Python, it's automatic." 
+	ss2mssH = ss2 - ssH
+	ss2msHs = ss2 - sHs
+	s1oss2mssH = numpy.sum((1 / numpy.array(ss2mssH)), axis=1)
+	s1oss2msHs = numpy.sum((1 / numpy.array(ss2msHs)), axis=1)
+	print(s1oss2mssH)
+	print(s1oss2msHs)
+# Watch out for precision dropping. Check and see if matlab drops the precision.
+	phimss = numpy.multiply((ss / (m - r)), s1oss2mssH)
+	phinss = numpy.multiply((ss / (n - r)), s1oss2msHs)
+	Dss = numpy.multiply(phimss, phinss)
 
-		ss2 = numpy.power(ss, 2)
-		# "Broadcasting in Matlab has to be done in a specific way, where as in Python, it's automatic." 
-		ss2mssH = ss2 - ssH
-		ss2msHs = ss2 - sHs
-		s1oss2mssH = sum(numpy.divide(1, ss2mssH), 2)
-		s1oss2msHs = sum(numpy.divide(1, ss2msHs), 2)
-	# Watch out for precision dropping. Check and see if matlab drops the precision.
-		phimss = numpy.multiply((ss / (m - r)), s1oss2mssH)
-		phinss = numpy.multiply((ss / (n - r)), s1oss2msHs)
-		Dss = numpy.multiply(phimss, phinss)
+	print("1", phimss)
+	print("2",phinss)
+	print("Dss", Dss)
 
-		# Numerical approximation of D transform derivative. 
-	# Check for the precision drop.
-		phimpss = (1 / (m - r)) * (sum(((-2 * numpy.power((ss / ss2mssH), 2))), 2) + s1oss2mssH)
-		phinpss = (1 / (n - r)) * (sum(((-2 * numpy.power((ss / ss2msHs), 2))), 2) + s1oss2msHs)
-		Dpss = numpy.multiply(phimss, phinpss) + numpy.multiply(phinss, phimpss)
+	# Numerical approximation of D transform derivative. 
+# Check for the precision drop.
+	phimpss = (1 / (m - r)) * (numpy.sum(((-2 * numpy.power((ss / ss2mssH), 2))), axis=1) + s1oss2mssH)
+	phinpss = (1 / (n - r)) * (numpy.sum(((-2 * numpy.power((ss / ss2msHs), 2))), axis=1) + s1oss2msHs)
+	Dpss = numpy.multiply(phimss, phinpss) + numpy.multiply(phinss, phimpss)
 
-		# Optimal Shrinkage.
-		w = -2 * (numpy.divide(Dss, Dpss))
-		for i in range(len(w)):
-	# See if this is correct with "isnan"
-			if (w[i] == None):
-				w[i] = 0
+	print("1", phimpss)
+	print("2",phinpss)
+	print("Dpss",Dpss)
 
-		# MSE estimate.
-		tmp = sum(numpy.divide(1, Dss))
-		MSE = tmp - sum(numpy.power(w, 2))
+	# Optimal Shrinkage.
+	w = -2 * (numpy.divide(Dss, Dpss))
+	for i in range(len(w)):
+# See if this is correct with "isnan"
+		if (w[i] == None):
+			w[i] = 0
 
-		# RMSE estimate.
-		RMSE = MSE / tmp
+	# MSE estimate.
+	print("Dss", Dss)
+	tmp = sum(numpy.divide(1, Dss))
+	print(tmp)
+	MSE = tmp - numpy.sum(numpy.power(w, 2))
+	print("w^2", numpy.power(w, 2))
+	print("baf", numpy.sum(numpy.power(w, 2)))
 
-		return w, MSE, RMSE
+	# RMSE estimate.
+	RMSE = MSE / tmp
 
-	# Initializer for the this class' instance.
-	def __init__(self):
-		print("OptShrink is created!")
+	print("RMSE",RMSE)
+	print("MSE",MSE)
+	print("w",w)
 
-	def OptShrink_Main(self, Y, r):
+	return w, MSE, RMSE
 
-		# Parsing inputs.
-		m, n = numpy.array(Y).shape
+# Initializer for the this class' instance.
+#def __init__(self):
+	#print("OptShrink is created!")
 
-		# Compute SVD.
-		U,sY,V = numpy.linalg.svd(Y, full_matrices=False)
+def OptShrink_Main(Y, r):
 
-		# Optimal Shrinkage.
-		sX, MSE, RMSE = optimalShrinkage(sY, m, n, r)
+	# Parsing inputs.
+	m, n = numpy.array(Y).shape
 
-		# Construct estimate.
-		Xhat = U[:][1:r] * diag(sX) * (V[:][1:r]).getH()
+	# Compute SVD.
+	U,sY,V = numpy.linalg.svd(Y, full_matrices=False)
+	# Optimal Shrinkage.
+	sX, MSE, RMSE = optimalShrinkage(sY, m, n, r)
 
-		return Xhat, sX, MSE, RMSE
+	print(sX)
+
+	# Construct estimate.
+	Xhat = U[:][1:r] * diag(sX) * (V[:][1:r]).getH()
+
+	return Xhat, sX, MSE, RMSE
 
 

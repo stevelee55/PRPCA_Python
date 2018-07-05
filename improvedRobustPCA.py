@@ -1,5 +1,6 @@
 import math
 import numpy
+from OptShrink import OptShrink_Main
 class improvedRobustPCA(object):
 
 	# Function that parses struct field
@@ -74,7 +75,7 @@ class improvedRobustPCA(object):
 				Slast = S
 				# Replaced A' with 1 because that's the output.
 				Z = 1 * (numpy.multiply(M, (A * (Lbar + Sbar) - Y)))
-				L = OptShrink(Lbar - tau * Z, r)
+				L, sX, MSE, RMSE = OptShrink_Main(Lbar - tau * Z, r)
 				TtransArray = numpy.array(T)
 				TtransArray = TtransArray.transpose()
 				S = TtransArray * soft(T * (Sbar - tau * Z), tau * lambdaS)

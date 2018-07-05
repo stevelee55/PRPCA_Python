@@ -2,6 +2,7 @@ import struct
 import math
 from HomographyTrans import HomographyTrans
 from improvedRobustPCA import improvedRobustPCA
+#from adjustLS2_RGB import adjustLS2_RGB_Main
 import numpy
 
 class PRPCA_RGB(object):
@@ -94,8 +95,6 @@ class PRPCA_RGB(object):
 		Ytil = []
 		Mtil = []
 
-		
-
 		for i in range(len(Mask)):
 			for j in range(len(Mask[0])):
 				if (Mask[i][j] == int(1)):
@@ -126,7 +125,16 @@ class PRPCA_RGB(object):
 		Shat = numpy.zeros(Y.shape)
 		Shat[m][:] = Stil
 
-		L_RPCA = numpy.reshape(Lhat, )
+
+		shape = (height, width, 3, len(movmat[0][0][0]))
+		print(shape)
+		L_RPCA = numpy.reshape(Lhat, shape)
+		print(L_RPCA.shape)
+		print(L_RPCA)
+		# S_RPCA = reshape(Shat, [height width 3 size(movmat,4)])
+		# M = logical(reshape(Mask,[height width 3 size(MovMat,4)]))
+
+		# L_RPCA, S_RPCA = adjustLS2_RGB_Main(L_RPCA, S_RPCA, M)
 
 		return "hello world", [2,3], "yay", "123", 3
 
