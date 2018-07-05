@@ -113,7 +113,8 @@ class PRPCA_RGB(object):
 		opts.M = Mtil
 		opts.maxIters = nIters
 		improvedRobustPCAInstance = improvedRobustPCA()
-		Ltil, Stil = improvedRobustPCAInstance.improvedRobustPCA_Main(Ytil, 1, LamS, opts)
+		# r should be 0 since it's later used to reference a value and matlab is referring to the index 1 (matlab) value.
+		Ltil, Stil = improvedRobustPCAInstance.improvedRobustPCA_Main(Ytil, 0, LamS, opts)
 
 		print(Ltil)
 		print(Stil)
