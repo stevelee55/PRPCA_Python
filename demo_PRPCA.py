@@ -1,4 +1,4 @@
-#
+# -*- coding: utf-8 -*-
 # Panoramic Robust PCA demo in Python.
 # Written by Steve Lee
 # 

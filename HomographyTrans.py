@@ -264,7 +264,7 @@ class HomographyTrans(object):
 							
 				# Column of Y are the frames and each row is pixels. Matlab says it's "vectorized"...?
 				# Getting the mask.
-				dimension = numpy.array(warpedImage).shape
+				dimension = numpy.array(imgB).shape
 				# print(dimension)
 				mask = cv2.warpPerspective(numpy.ones(dimension), M, (width, height))
 				# print(len(mask))
@@ -274,17 +274,23 @@ class HomographyTrans(object):
 				counter = 0
 				# May not need * 3 since it's rgb
 				# Going through the x3.
+				# print(numpy.array(mask)[:,:,2])
+
+				# newarray = numpy.array(mask)[:,:,2]
+				# for i in range(len(newarray)):
+				# 	print("Contents", newarray[i])
+
 				for j in range(len(mask[0][0])):
 					# Going through the width.
 					for k in range(len(mask[0])):
 						# Going through the height.
 						for z in range(len(mask)):
 							if (mask[z][k][j] != 0):
-								 mask[z][k][j] = 1
-								 Mask[counter][i] = 1
+								mask[z][k][j] = 1
+								Mask[counter][i] = 1
 							counter+=1
 
-				print(Mask[1])
+				#print(Mask[1])
 				print("BHAHAHHAS")
 
 

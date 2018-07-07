@@ -83,10 +83,10 @@ class PRPCA_RGB(object):
 
 		# Calculating meaningful region for boosting (?)
 		
-		print(len(Mask[0]))
-		print(len(Mask))
-		print(len(Y[0]))
-		print(len(T))
+		# print(len(Mask[0]))
+		# print(len(Mask))
+		# print(len(Y[0]))
+		# print(len(T))
 
 		# m = numpy.any(Mask, axis=1)
 		# print("m:", len(m))
@@ -94,16 +94,27 @@ class PRPCA_RGB(object):
 
 		Ytil = []
 		Mtil = []
+		m = []
+
+		#print("Mask",Mask)
+
+		added = False
 
 		for i in range(len(Mask)):
 			for j in range(len(Mask[0])):
-				if (Mask[i][j] == int(1)):
+				# print("Checking",Mask[i][j])
+				if (Mask[i][j] == 1):
 					Ytil.append(Y[i])
 					Mtil.append(Mask[i])
+					# print("i",i)
+					m.append(1)
+					added = True
 					break
+			if (not added):
+				m.append(0)
 
 		# print("Ytil:", len(Ytil))
-		# print(Ytil)
+		#print("Ytil",Ytil)
 		# print("Mtil:", len(Mtil))
 		# print(len(Mask))
 
@@ -115,22 +126,35 @@ class PRPCA_RGB(object):
 		# r should be 0 since it's later used to reference a value and matlab is referring to the index 1 (matlab) value.
 		Ltil, Stil = improvedRobustPCAInstance.improvedRobustPCA_Main(Ytil, 0, LamS, opts)
 
-		print(Ltil)
-		print(Stil)
+		print("Ltil",Ltil)
+		print("Stil",Stil)
 
+		print(":)")
 		# Embedding.
 		Y = numpy.array(Y)
 		Lhat = numpy.zeros(Y.shape)
-		Lhat[m][:] = Ltil
+		counter = 0
+		# Adding back into the original dimensions.
+		# Lhat[m][:] = Ltil.
+		for i in range(len(m)):
+			if (m[i] == 1):
+				Lhat[i] = Ltil[counter]
+				counter+=1
 		Shat = numpy.zeros(Y.shape)
-		Shat[m][:] = Stil
+		counter = 0
+		# Adding back into the original dimensions.
+		# Lhat[m][:] = Ltil.
+		for i in range(len(m)):
+			if (m[i] == 1):
+				Shat[i] = Stil[counter]
+				counter+=1
 
 
 		shape = (height, width, 3, len(movmat[0][0][0]))
-		print(shape)
+		# print(shape)
 		L_RPCA = numpy.reshape(Lhat, shape)
-		print(L_RPCA.shape)
-		print(L_RPCA)
+		# print(L_RPCA.shape)
+		# print(L_RPCA)
 		# S_RPCA = reshape(Shat, [height width 3 size(movmat,4)])
 		# M = logical(reshape(Mask,[height width 3 size(MovMat,4)]))
 
