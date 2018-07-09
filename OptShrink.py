@@ -62,9 +62,10 @@ def optimalShrinkage(s, m, n, r):
 
 	# Optimal Shrinkage.
 	w = -2 * (numpy.divide(Dss, Dpss))
-	for i in range(len(w)):
-# See if this is correct with "isnan"
-		if (w[i] == None):
+	wnanArr = numpy.isnan(w)
+	for i in range(len(wnanArr)):
+	# If it is nan, set it to 0.
+		if (wnanArr[i] == True):
 			w[i] = 0
 
 	# MSE estimate.
@@ -90,11 +91,13 @@ def optimalShrinkage(s, m, n, r):
 
 def OptShrink_Main(Y, r):
 
+	#import pdb; pdb.set_trace()
+
 	# Parsing inputs.
 	m, n = numpy.array(Y).shape
 
-	print(m)
-	print(n)
+	# print(m)
+	# print(n)
 
 	# print(Y)
 	# Compute SVD.
@@ -105,23 +108,25 @@ def OptShrink_Main(Y, r):
 	# print(U)
 
 	# Construct estimate.
-	print("U", numpy.array(U))
-	print("V", numpy.array(V))
-	print("sX", numpy.array(sX))
+	# print("U", numpy.array(U))
+	# print("V", numpy.array(V))
+	# print("sX", numpy.array(sX))
+
+	#import pdb; pdb.set_trace()
 
 
 	thing = numpy.array(U)[:,0]
 	thing1 = numpy.array([numpy.array(V)[:,0]])
-	print("U:][0:r + 1]", thing)
-	print("V:][0:r + 1]", thing1)
-	print("U:][0:r + 1]", thing.shape)
-	print("V:][0:r + 1]", thing1.shape)
+	# print("U:][0:r + 1]", thing)
+	# print("V:][0:r + 1]", thing1)
+	# print("U:][0:r + 1]", thing.shape)
+	# print("V:][0:r + 1]", thing1.shape)
 
-	print((numpy.array(U)[:,[0]] * numpy.diag(sX)).shape)
+	# print((numpy.array(U)[:,[0]] * numpy.diag(sX)).shape)
 	Xhat = numpy.matmul((numpy.array(U)[:,[0]] * numpy.diag(sX)), numpy.array([numpy.array(V)[:,0]]))
 	
-	print("Xhat",Xhat)
-	print("Xhat shape",Xhat.shape)
+	# print("Xhat",Xhat)
+	# print("Xhat shape",Xhat.shape)
 	return Xhat, sX, MSE, RMSE
 
 

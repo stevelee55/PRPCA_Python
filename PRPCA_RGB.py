@@ -73,6 +73,9 @@ class PRPCA_RGB(object):
 		optsHT.isRGB = isRGB
 		optsHT.method = method
 
+	#import pdb; pdb.set_trace()
+
+
 		# Homography transformation
 		homographyTransInstance = HomographyTrans()
 		Y, Mask, height, width, T = homographyTransInstance.HomographyTrans_Main(movmat, optsHT)
@@ -92,11 +95,13 @@ class PRPCA_RGB(object):
 		# print("m:", len(m))
 		# # m = any(Mask,2)
 
+		# Debugger.
+	#import pdb; pdb.set_trace()
+
 		Ytil = []
 		Mtil = []
 		m = []
 
-		#print("Mask",Mask)
 
 		added = False
 
@@ -112,11 +117,15 @@ class PRPCA_RGB(object):
 					break
 			if (not added):
 				m.append(0)
+			else:
+				added = False
 
 		# print("Ytil:", len(Ytil))
 		#print("Ytil",Ytil)
 		# print("Mtil:", len(Mtil))
 		# print(len(Mask))
+
+	#import pdb; pdb.set_trace()
 
 		# RPCA
 		opts = struct
@@ -126,10 +135,12 @@ class PRPCA_RGB(object):
 		# r should be 0 since it's later used to reference a value and matlab is referring to the index 1 (matlab) value.
 		Ltil, Stil = improvedRobustPCAInstance.improvedRobustPCA_Main(Ytil, 0, LamS, opts)
 
-		print("Ltil",Ltil)
-		print("Stil",Stil)
 
-		print(":)")
+	#import pdb; pdb.set_trace()
+		# print("Ltil",Ltil)
+		# print("Stil",Stil)
+
+		# print(":)")
 		# Embedding.
 		Y = numpy.array(Y)
 		Lhat = numpy.zeros(Y.shape)
@@ -150,15 +161,18 @@ class PRPCA_RGB(object):
 				counter+=1
 
 
+		import pdb; pdb.set_trace()
 		shape = (height, width, 3, len(movmat[0][0][0]))
-		# print(shape)
+		# # print(shape)
 		L_RPCA = numpy.reshape(Lhat, shape)
 		# print(L_RPCA.shape)
 		# print(L_RPCA)
-		# S_RPCA = reshape(Shat, [height width 3 size(movmat,4)])
-		# M = logical(reshape(Mask,[height width 3 size(MovMat,4)]))
+		S_RPCA = numpy.reshape(Shat, shape)
+		# print(S_RPCA.shape)
+		# print(S_RPCA)
+		M = numpy.reshape(Mask, shape)
 
-		# L_RPCA, S_RPCA = adjustLS2_RGB_Main(L_RPCA, S_RPCA, M)
+		L_RPCA, S_RPCA = adjustLS2_RGB_Main(L_RPCA, S_RPCA, M)
 
 		return "hello world", [2,3], "yay", "123", 3
 

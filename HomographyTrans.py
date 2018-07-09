@@ -136,8 +136,8 @@ class HomographyTrans(object):
 		# Calculating panorama dimensions.
 		frameHeight = len(movmat[0])
 		frameWidth = len(movmat[0][0])
-		print(frameHeight)
-		print(frameWidth)
+		# print(frameHeight)
+		# print(frameWidth)
 		# Getting the panorama size.
 		xlim = []
 		ylim = []
@@ -203,9 +203,9 @@ class HomographyTrans(object):
 		width = int(xMax - xMin)
 		height = int(yMax - yMin)
 
-		print("Calculated")
-		print(width)
-		print(height)
+		# print("Calculated")
+		# print(width)
+		# print(height)
 
 		# This affects at which angle the panaroma is gonna be happening.
 		Tinv = numpy.linalg.inv(tforms[centerImageId])
@@ -230,7 +230,7 @@ class HomographyTrans(object):
 			# plt.show()
 
 		numOfPoints = height * width * 3
-		print(numOfPoints)
+		# print(numOfPoints)
 		# Y is accessed by Y[frame #][points]
 		Y = [[0 for i in range(len(tforms))] for j in range(numOfPoints)]
 		Mask = [[0 for i in range(len(tforms))] for j in range(numOfPoints)]
@@ -252,6 +252,8 @@ class HomographyTrans(object):
 				# # Height: Smaller.
 				# print(len(warpedImage))
 				# RGB dimension. Going through the x3.
+
+			# Could be the problem because of the way in which the points are being added to Y.
 				for r in range(len(warpedImage[0][0])):
 					# Going through the width.
 					for w in range(len(warpedImage[0])):
@@ -291,7 +293,7 @@ class HomographyTrans(object):
 							counter+=1
 
 				#print(Mask[1])
-				print("BHAHAHHAS")
+				print("Homography frame #: ", i)
 
 
 		print("Homography Complete")
