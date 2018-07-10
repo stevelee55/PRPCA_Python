@@ -2,8 +2,9 @@ import struct
 import math
 from HomographyTrans import HomographyTrans
 from improvedRobustPCA import improvedRobustPCA
-#from adjustLS2_RGB import adjustLS2_RGB_Main
+from adjustLS2_RGB import adjustLS2_RGB_Main
 import numpy
+import matplotlib.pyplot as plt
 
 class PRPCA_RGB(object):
 
@@ -105,12 +106,12 @@ class PRPCA_RGB(object):
 
 		added = False
 
-		for i in range(len(Mask)):
-			for j in range(len(Mask[0])):
+		for h in range(len(Mask)):
+			for w in range(len(Mask[0])):
 				# print("Checking",Mask[i][j])
-				if (Mask[i][j] == 1):
-					Ytil.append(Y[i])
-					Mtil.append(Mask[i])
+				if (Mask[h][w] == 1):
+					Ytil.append(Y[h])
+					Mtil.append(Mask[h])
 					# print("i",i)
 					m.append(1)
 					added = True
@@ -135,6 +136,7 @@ class PRPCA_RGB(object):
 		# r should be 0 since it's later used to reference a value and matlab is referring to the index 1 (matlab) value.
 		Ltil, Stil = improvedRobustPCAInstance.improvedRobustPCA_Main(Ytil, 0, LamS, opts)
 
+		#import pdb; pdb.set_trace()
 
 	#import pdb; pdb.set_trace()
 		# print("Ltil",Ltil)
@@ -161,8 +163,11 @@ class PRPCA_RGB(object):
 				counter+=1
 
 
-		import pdb; pdb.set_trace()
-		shape = (height, width, 3, len(movmat[0][0][0]))
+		#Check for nan here
+
+
+		#import pdb; pdb.set_trace()
+		shape = (height, width, 3, len(movmat))
 		# # print(shape)
 		L_RPCA = numpy.reshape(Lhat, shape)
 		# print(L_RPCA.shape)
@@ -173,6 +178,19 @@ class PRPCA_RGB(object):
 		M = numpy.reshape(Mask, shape)
 
 		L_RPCA, S_RPCA = adjustLS2_RGB_Main(L_RPCA, S_RPCA, M)
+
+		#import pdb; pdb.set_trace()
+
+
+		# Seems like I have to convery the image back to [0..255] range?
+		imageeee = L_RPCA[:,:,:,0]
+		plt.imshow(imageeee)
+		plt.show()
+
+		imageeee = S_RPCA[:,:,:,0]
+		plt.imshow(imageeee)
+		plt.show()
+
 
 		return "hello world", [2,3], "yay", "123", 3
 
