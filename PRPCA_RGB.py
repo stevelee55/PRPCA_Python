@@ -109,7 +109,8 @@ class PRPCA_RGB(object):
 		for h in range(len(Mask)):
 			for w in range(len(Mask[0])):
 				# print("Checking",Mask[i][j])
-				if (Mask[h][w] == 1):
+				# This replicates any by allowing any value that is only 1.
+				if (Mask[h][w] != 0):
 					Ytil.append(Y[h])
 					Mtil.append(Mask[h])
 					# print("i",i)

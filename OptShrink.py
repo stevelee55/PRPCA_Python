@@ -13,16 +13,22 @@ def optimalShrinkage(s, m, n, r):
 	# print(s)
 	# This means get the elements from 0 - r (r not included) and it doesn't do anything
 	# if I just leave it 0 - 0.
+	
+
 	ss = s[0:r + 1]
 	# print("ss",ss)
 
 	# Noise singular values.
 	# The left of : is included so r + 1 is used and q isn't included so I used q + 1.
-	sn2 = numpy.power(s[r + 1:q + 1], 2) # Column Vector.
+	# q is 35 and the indexing can only go up to 34 so just use q, which is 35.
+	sn2 = numpy.power(s[r + 1:q], 2) # Column Vector.
 	# print(len(sn2))
 	# print(m)
 	# print(q)
-	pressH = numpy.append(sn2, numpy.zeros((m - q)))
+
+
+# Could use (m-q),1
+	pressH = numpy.append(sn2, numpy.zeros((m - q))) # Problem COUDL BE HERE.
 	# print(pressH)
 	# print(len(pressH))
 	# print(pressH.shape)
@@ -62,15 +68,15 @@ def optimalShrinkage(s, m, n, r):
 
 	# Optimal Shrinkage.
 	w = -2 * (numpy.divide(Dss, Dpss))
-	wnanArr = numpy.isnan(w)
-	for i in range(len(wnanArr)):
+	#wnanArr = numpy.isnan(w)
+	for i in range(len(w)):
 	# If it is nan, set it to 0.
-		if (wnanArr[i] == True):
+		if (numpy.isnan(w)):
 			w[i] = 0
 
 	# MSE estimate.
 	# print("Dss", Dss)
-	tmp = sum(numpy.divide(1, Dss))
+	tmp = numpy.sum(numpy.divide(1, Dss))
 	# print(tmp)
 	MSE = tmp - numpy.sum(numpy.power(w, 2))
 	# print("w^2", numpy.power(w, 2))
@@ -115,15 +121,17 @@ def OptShrink_Main(Y, r):
 	#import pdb; pdb.set_trace()
 
 
-	thing = numpy.array(U)[:,0]
-	thing1 = numpy.array([numpy.array(V)[:,0]])
+	newUy = numpy.array(U)[:,0:r + 1]
+	newVy = numpy.array(V)[:,0:r+1]
+	newVy = newVy.transpose()
 	# print("U:][0:r + 1]", thing)
 	# print("V:][0:r + 1]", thing1)
 	# print("U:][0:r + 1]", thing.shape)
 	# print("V:][0:r + 1]", thing1.shape)
 
+	#import pdb; pdb.set_trace()
 	# print((numpy.array(U)[:,[0]] * numpy.diag(sX)).shape)
-	Xhat = numpy.matmul((numpy.array(U)[:,[0]] * numpy.diag(sX)), numpy.array([numpy.array(V)[:,0]]))
+	Xhat = numpy.matmul(numpy.matmul(newUy, numpy.diag(sX)), newVy)
 	
 	# print("Xhat",Xhat)
 	# print("Xhat shape",Xhat.shape)
