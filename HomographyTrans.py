@@ -272,7 +272,7 @@ class HomographyTrans(object):
 				# print(len(mask))
 				# print(len(mask[0]))
 				# print(len(mask[0][0]))
-				
+
 				counter = 0
 				# May not need * 3 since it's rgb
 				# Going through the x3.

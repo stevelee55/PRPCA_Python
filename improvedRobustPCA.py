@@ -84,11 +84,12 @@ class improvedRobustPCA(object):
 			nIters = nIters + 1
 
 			if accel:
+				#import pdb; pdb.set_trace()
+
 				# Accelerated proximal gradient step.
 				tlast = t
 				t = 0.5 * (1 + math.sqrt(1 + 4 * t**2))
 				# print("t", t)
-				#import pdb; pdb.set_trace()
 				Lbar = L + ((tlast - 1.0) / t) * (L - Llast)
 				# print("Lbar",Lbar)
 				Sbar = S + ((tlast - 1.0) / t) * (S - Slast)

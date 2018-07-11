@@ -14,6 +14,9 @@ def optimalShrinkage(s, m, n, r):
 	# This means get the elements from 0 - r (r not included) and it doesn't do anything
 	# if I just leave it 0 - 0.
 	
+	print("BEGIN")
+
+	import pdb; pdb.set_trace()
 
 	ss = s[0:r + 1]
 	# print("ss",ss)
@@ -21,23 +24,24 @@ def optimalShrinkage(s, m, n, r):
 	# Noise singular values.
 	# The left of : is included so r + 1 is used and q isn't included so I used q + 1.
 	# q is 35 and the indexing can only go up to 34 so just use q, which is 35.
-	sn2 = numpy.power(s[r + 1:q], 2) # Column Vector.
+	sn2 = numpy.power([s[r + 1:q]], 2) # Column Vector.
+	sn2 = sn2.transpose()
 	# print(len(sn2))
 	# print(m)
 	# print(q)
 
 
 # Could use (m-q),1
-	pressH = numpy.append(sn2, numpy.zeros((m - q))) # Problem COUDL BE HERE.
+	ssH = numpy.concatenate((sn2, numpy.zeros(((m - q),1))), axis=0).transpose() # Problem COUDL BE HERE.
 	# print(pressH)
 	# print(len(pressH))
 	# print(pressH.shape)
 	# Doesn't transposes because it's 1D so just try manually doing it.
-	ssH = numpy.array([pressH]) #numpy.transpose(pressH) # Test this. Row vector.
+	#ssH = numpy.array([pressH]) #numpy.transpose(pressH) # Test this. Row vector.
 	# print(len(ssH))
 	# print("SSH",ssH)
-	presHs = numpy.append(sn2, numpy.zeros((n - q)))
-	sHs = numpy.array([presHs]) #numpy.transpose(presHs)
+	sHs = numpy.concatenate((sn2, numpy.zeros(((n - q),1))), axis=0).transpose()
+	#sHs = numpy.array([presHs]) #numpy.transpose(presHs)
 
 	ss2 = numpy.power(ss, 2)
 	# "Broadcasting in Matlab has to be done in a specific way, where as in Python, it's automatic." 
@@ -52,8 +56,8 @@ def optimalShrinkage(s, m, n, r):
 	phinss = numpy.multiply((ss / (n - r)), s1oss2msHs)
 	Dss = numpy.multiply(phimss, phinss)
 
-	# print("1", phimss)
-	# print("2",phinss)
+	print("1", phimss)
+	print("2",phinss)
 	# print("Dss", Dss)
 
 	# Numerical approximation of D transform derivative. 
@@ -62,12 +66,17 @@ def optimalShrinkage(s, m, n, r):
 	phinpss = (1 / (n - r)) * (numpy.sum(((-2 * numpy.power((ss / ss2msHs), 2))), axis=1) + s1oss2msHs)
 	Dpss = numpy.multiply(phimss, phinpss) + numpy.multiply(phinss, phimpss)
 
-	# print("1", phimpss)
-	# print("2",phinpss)
+	print("1", phimpss)
+	print("2",phinpss)
 	# print("Dpss",Dpss)
 
 	# Optimal Shrinkage.
 	w = -2 * (numpy.divide(Dss, Dpss))
+
+	print("w",w)
+	print("Dss", Dss)
+	print("Dpss", Dpss)
+
 	#wnanArr = numpy.isnan(w)
 	for i in range(len(w)):
 	# If it is nan, set it to 0.
@@ -122,8 +131,7 @@ def OptShrink_Main(Y, r):
 
 
 	newUy = numpy.array(U)[:,0:r + 1]
-	newVy = numpy.array(V)[:,0:r+1]
-	newVy = newVy.transpose()
+	newVy = numpy.array(V)[0:r + 1,:]
 	# print("U:][0:r + 1]", thing)
 	# print("V:][0:r + 1]", thing1)
 	# print("U:][0:r + 1]", thing.shape)
