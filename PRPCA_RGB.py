@@ -170,13 +170,13 @@ class PRPCA_RGB(object):
 		#import pdb; pdb.set_trace()
 		shape = (height, width, 3, len(movmat))
 		# # print(shape)
-		L_RPCA = numpy.reshape(Lhat, shape)
+		L_RPCA = numpy.reshape(Lhat, shape,order="F")
 		# print(L_RPCA.shape)
 		# print(L_RPCA)
-		S_RPCA = numpy.reshape(Shat, shape)
+		S_RPCA = numpy.reshape(Shat, shape,order="F")
 		# print(S_RPCA.shape)
 		# print(S_RPCA)
-		M = numpy.reshape(Mask, shape)
+		M = numpy.reshape(Mask, shape,order="F")
 
 		L_RPCA, S_RPCA = adjustLS2_RGB_Main(L_RPCA, S_RPCA, M)
 

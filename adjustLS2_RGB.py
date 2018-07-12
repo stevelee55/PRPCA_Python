@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 def adjustLS2(L, S2, M):
 
-	import pdb; pdb.set_trace()
+	#import pdb; pdb.set_trace()
 
 	X = S2
 	for j in range(len(M[0][0])):
@@ -38,7 +38,7 @@ def adjustLS2(L, S2, M):
 		L[:,:, frameNumber] = L[:,:,frameNumber] + Delta[frameNumber]
 		S2[:,:, frameNumber] = S2[:,:, frameNumber] - Delta[frameNumber] * M[:,:,frameNumber]
 
-	import pdb; pdb.set_trace()
+	#import pdb; pdb.set_trace()
 
 	return L, S2
 
@@ -48,20 +48,20 @@ def adjustLS2_RGB_Main(L, S2, M):
 	L = numpy.array(L)
 	ny, nx, notUse, nt = L.shape
 
-	L_1 = numpy.reshape(L[:,:,0,:], (ny, nx, nt))
-	L_2 = numpy.reshape(L[:,:,1,:], (ny, nx, nt))
-	L_3 = numpy.reshape(L[:,:,2,:], (ny, nx, nt))
+	L_1 = numpy.reshape(L[:,:,0,:], (ny, nx, nt),order="F")
+	L_2 = numpy.reshape(L[:,:,1,:], (ny, nx, nt),order="F")
+	L_3 = numpy.reshape(L[:,:,2,:], (ny, nx, nt),order="F")
 
 	plt.imshow(L_1[:,:,0])
 	plt.show()
 
-	S_1 = numpy.reshape(S2[:,:,0,:], (ny, nx, nt))
-	S_2 = numpy.reshape(S2[:,:,1,:], (ny, nx, nt))
-	S_3 = numpy.reshape(S2[:,:,2,:], (ny, nx, nt))
+	S_1 = numpy.reshape(S2[:,:,0,:], (ny, nx, nt),order="F")
+	S_2 = numpy.reshape(S2[:,:,1,:], (ny, nx, nt),order="F")
+	S_3 = numpy.reshape(S2[:,:,2,:], (ny, nx, nt),order="F")
 
-	M_1 = numpy.reshape(M[:,:,0,:], (ny, nx, nt))
-	M_2 = numpy.reshape(M[:,:,1,:], (ny, nx, nt))
-	M_3 = numpy.reshape(M[:,:,2,:], (ny, nx, nt))
+	M_1 = numpy.reshape(M[:,:,0,:], (ny, nx, nt),order="F")
+	M_2 = numpy.reshape(M[:,:,1,:], (ny, nx, nt),order="F")
+	M_3 = numpy.reshape(M[:,:,2,:], (ny, nx, nt),order="F")
 
 	L_FINAL = numpy.array([[[[0.0 for i in range(nt)] for j in range(notUse)] for k in range(nx)] for z in range(ny)])
 	S2_FINAL = numpy.array([[[[0.0 for i in range(nt)] for j in range(notUse)] for k in range(nx)] for z in range(ny)])

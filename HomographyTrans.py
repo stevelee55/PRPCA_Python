@@ -264,18 +264,18 @@ class HomographyTrans(object):
 							#print(Y[counter])
 							counter+=1
 
-				import pdb; pdb.set_trace()
+				# import pdb; pdb.set_trace()
 
-				print(warpedImage)
+				# print(warpedImage)
 
-				print("IMAGE RETRIEVAL TEST")
-				savedImage = numpy.reshape(Y, (len(warpedImage), len(warpedImage[0]),len(warpedImage[0][0]),35))
+				# print("IMAGE RETRIEVAL TEST")
+				# savedImage = numpy.reshape(Y, (len(warpedImage), len(warpedImage[0]),len(warpedImage[0][0]),35), order="F")
 
-				print(savedImage[:,:,:,0])
+				# print(savedImage[:,:,:,0])
 
-				import pdb; pdb.set_trace()
-				plt.imshow(savedImage[:,:,:,0])
-				plt.show()
+				# import pdb; pdb.set_trace()
+				# plt.imshow(savedImage[:,:,:,0])
+				# plt.show()
 							
 				# Column of Y are the frames and each row is pixels. Matlab says it's "vectorized"...?
 				# Getting the mask.
