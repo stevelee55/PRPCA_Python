@@ -1,9 +1,10 @@
 import numpy
 import math
+import matplotlib.pyplot as plt
 
 def adjustLS2(L, S2, M):
 
-	#import pdb; pdb.set_trace()
+	import pdb; pdb.set_trace()
 
 	X = S2
 	for j in range(len(M[0][0])):
@@ -18,9 +19,9 @@ def adjustLS2(L, S2, M):
 
 	# This should be h * w.
 	Delta = numpy.nanmedian(X, 2)
-	for h in range(len(Delta)):
-		for w in range(len(Delta[0])):
-			if (math.isnan(Delta[h][w])):
+	for h in range(len(M)):
+		for w in range(len(M[0])):
+			if (not any(M[h][w])):
 				Delta[h][w] = 0
 
 	#import pdb; pdb.set_trace()
@@ -37,7 +38,7 @@ def adjustLS2(L, S2, M):
 		L[:,:, frameNumber] = L[:,:,frameNumber] + Delta[frameNumber]
 		S2[:,:, frameNumber] = S2[:,:, frameNumber] - Delta[frameNumber] * M[:,:,frameNumber]
 
-	#import pdb; pdb.set_trace()
+	import pdb; pdb.set_trace()
 
 	return L, S2
 
@@ -51,6 +52,9 @@ def adjustLS2_RGB_Main(L, S2, M):
 	L_2 = numpy.reshape(L[:,:,1,:], (ny, nx, nt))
 	L_3 = numpy.reshape(L[:,:,2,:], (ny, nx, nt))
 
+	plt.imshow(L_1[:,:,0])
+	plt.show()
+
 	S_1 = numpy.reshape(S2[:,:,0,:], (ny, nx, nt))
 	S_2 = numpy.reshape(S2[:,:,1,:], (ny, nx, nt))
 	S_3 = numpy.reshape(S2[:,:,2,:], (ny, nx, nt))
@@ -63,6 +67,7 @@ def adjustLS2_RGB_Main(L, S2, M):
 	S2_FINAL = numpy.array([[[[0.0 for i in range(nt)] for j in range(notUse)] for k in range(nx)] for z in range(ny)])
 
 	L_tmp, S2_tmp = adjustLS2(L_1,S_1,M_1)
+
 	L_FINAL[:,:,0,:] = L_tmp
 	S2_FINAL[:,:,0,:] = S2_tmp
 

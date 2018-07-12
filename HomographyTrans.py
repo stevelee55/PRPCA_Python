@@ -263,6 +263,19 @@ class HomographyTrans(object):
 							Y[counter][i] = warpedImage[h][w][r]
 							#print(Y[counter])
 							counter+=1
+
+				import pdb; pdb.set_trace()
+
+				print(warpedImage)
+
+				print("IMAGE RETRIEVAL TEST")
+				savedImage = numpy.reshape(Y, (len(warpedImage), len(warpedImage[0]),len(warpedImage[0][0]),35))
+
+				print(savedImage[:,:,:,0])
+
+				import pdb; pdb.set_trace()
+				plt.imshow(savedImage[:,:,:,0])
+				plt.show()
 							
 				# Column of Y are the frames and each row is pixels. Matlab says it's "vectorized"...?
 				# Getting the mask.
