@@ -18,13 +18,13 @@ def optimalShrinkage(s, m, n, r):
 
 	# import pdb; pdb.set_trace()
 
-	ss = s[0:r + 1]
+	ss = numpy.array(s[0:r + 1])
 	# print("ss",ss)
 
 	# Noise singular values.
 	# The left of : is included so r + 1 is used and q isn't included so I used q + 1.
 	# q is 35 and the indexing can only go up to 34 so just use q, which is 35.
-	sn2 = numpy.power([s[r + 1:q]], 2) # Column Vector.
+	sn2 = numpy.power(numpy.array([s[r + 1:q]]), 2) # Column Vector.
 	sn2 = sn2.transpose()
 	# print(len(sn2))
 	# print(m)
@@ -130,8 +130,8 @@ def OptShrink_Main(Y, r):
 	#import pdb; pdb.set_trace()
 
 
-	newUy = numpy.array(U)[:,0:r + 1]
-	newVy = numpy.array(V)[0:r + 1,:]
+	newUy = numpy.array(numpy.array(U)[:,0:r + 1])
+	newVy = numpy.array(numpy.array(V)[0:r + 1,:])
 	# print("U:][0:r + 1]", thing)
 	# print("V:][0:r + 1]", thing1)
 	# print("U:][0:r + 1]", thing.shape)

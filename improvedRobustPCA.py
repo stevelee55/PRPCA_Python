@@ -104,7 +104,7 @@ class improvedRobustPCA(object):
 				# print("Z", Z)
 				# print("Lbar - tau * Z", Lbar - tau * Z)
 				# print("r", r)
-				L, sX, MSE, RMSE = OptShrink_Main(Lbar - tau * Z, r)
+				L, sX, MSE, RMSE = OptShrink_Main(numpy.array(Lbar - tau * Z), r)
 				print("L",L)
 				print("MSE", MSE)
 				print("RMSE", RMSE)

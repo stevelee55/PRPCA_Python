@@ -52,8 +52,8 @@ def adjustLS2_RGB_Main(L, S2, M):
 	L_2 = numpy.reshape(L[:,:,1,:], (ny, nx, nt),order="F")
 	L_3 = numpy.reshape(L[:,:,2,:], (ny, nx, nt),order="F")
 
-	plt.imshow(L_1[:,:,0])
-	plt.show()
+	# plt.imshow(L_1[:,:,0])
+	# plt.show()
 
 	S_1 = numpy.reshape(S2[:,:,0,:], (ny, nx, nt),order="F")
 	S_2 = numpy.reshape(S2[:,:,1,:], (ny, nx, nt),order="F")

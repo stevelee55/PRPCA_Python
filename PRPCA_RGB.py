@@ -5,8 +5,22 @@ from improvedRobustPCA import improvedRobustPCA
 from adjustLS2_RGB import adjustLS2_RGB_Main
 import numpy
 import matplotlib.pyplot as plt
+import boto3
+
+# print("VERSION", boto3.__version__)
+
+import matplotlib
+# Force matplotlib to not use any Xwindows backend.
+matplotlib.use('Agg')
 
 class PRPCA_RGB(object):
+
+	# Temporary AWS bucket upload.
+	def S3_Upload_Image(self, image):
+		# Do not hard code credentials
+		# boto3.client not available if there are spaces.
+		client = boto3.client("s3", aws_access_key_id="AKIAIXW57FAC5P2E3ILA", aws_secret_access_key="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")
+		client.upload_file("L.jpg", "vsp-userfiles-mobilehub-602139379", "L.jpg")
 
 	# Initializer for the this class' instance.
 	def __init__(self):
@@ -182,15 +196,19 @@ class PRPCA_RGB(object):
 
 		#import pdb; pdb.set_trace()
 
-
-		# Seems like I have to convery the image back to [0..255] range?
+		# # Seems like I have to convery the image back to [0..255] range?
 		imageeee = L_RPCA[:,:,:,0]
-		plt.imshow(imageeee)
-		plt.show()
+		# plt.imshow(imageeee)
+		plt.imsave("L.jpg", imageeee)
+		# plt.show()
+
+		self.S3_Upload_Image("L.jpg")
+		
 
 		imageeee = S_RPCA[:,:,:,0]
-		plt.imshow(imageeee)
-		plt.show()
+		#plt.imshow(imageeee)
+		#plt.savefig("S.jpg")
+
 
 
 		return "hello world", [2,3], "yay", "123", 3

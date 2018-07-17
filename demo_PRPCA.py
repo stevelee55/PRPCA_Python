@@ -15,6 +15,7 @@ from imread import imread
 import matplotlib.pyplot as plt
 from skimage import transform
 import cv2
+import numpy
 
 # Classes
 from PRPCA_RGB import PRPCA_RGB
@@ -60,8 +61,9 @@ img = imread("Data/tennis/00000.jpg")
 height = len(img)
 # Longer. i.e: 854
 width = len(img[0])
-newHeight = float(height * 0.5)
-newWidth = float(width * 0.5)
+percentage = 0.5
+newHeight = float(height * percentage)
+newWidth = float(width * percentage)
 
 # Initializing the 4-D Matrix with 0 values.
 # Apparently the matrix is height * width * 3 * # of frames of the video.
@@ -80,7 +82,7 @@ for i in range(numberOfVideoFrames):
 	# In the Matlab code, the function imresize changes the values dramatically, but it is later fixed
 	#by the im2double.
 	# cv2.resize doesn't do im2double automatically so normalizing needs to be done later.
-	MovMat[i] = cv2.resize(img, None, fx=0.5, fy=0.5)
+	MovMat[i] = cv2.resize(img, None, fx=percentage, fy=percentage)
 
 	#Description
 	#example
@@ -90,6 +92,11 @@ for i in range(numberOfVideoFrames):
 # Needs to be less than or equal to the numberOfVideoFrames.
 numberOfFramesToUse = 35
 #Getting the certain number of frames for the computation.
+
+# Arvin. Julia. Calilng Julia.rpca. Julia optimization, precompiling, which makes it faster. Registering do it in python, part after it, use Julia, which precompilation, there is a way to do it. 
+# Julia is pretty easy. Figure out inefficient
+
+# Email the results to him. 
 NewMovMat = [[[[0 for x in range(height)] for y in range(width)] for m in range(RGB)] for z in range(numberOfFramesToUse)]
 for i in range(numberOfFramesToUse):
 	NewMovMat[i] = MovMat[i]

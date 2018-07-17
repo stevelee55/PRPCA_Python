@@ -243,6 +243,10 @@ class HomographyTrans(object):
 				# This is what im2double does.
 				warpedImage = cv2.normalize(warpedImage.astype('float'), None, 0.0, 1.0, cv2.NORM_MINMAX)
 
+
+				dimension = numpy.array(imgB).shape
+				mask = cv2.warpPerspective(numpy.ones(dimension), M, (width, height))
+
 				# Getting the pixel values for each col for each row for each number
 				counter = 0
 				# # RGB: 3.
@@ -261,6 +265,9 @@ class HomographyTrans(object):
 						for h in range(len(warpedImage)):
 						# This is where the Y is initialized, which is 
 							Y[counter][i] = warpedImage[h][w][r]
+							if (mask[h][w][r] != 0):
+								mask[h][w][r] = 1
+								Mask[counter][i] = 1
 							#print(Y[counter])
 							counter+=1
 
@@ -279,14 +286,14 @@ class HomographyTrans(object):
 							
 				# Column of Y are the frames and each row is pixels. Matlab says it's "vectorized"...?
 				# Getting the mask.
-				dimension = numpy.array(imgB).shape
-				# print(dimension)
-				mask = cv2.warpPerspective(numpy.ones(dimension), M, (width, height))
-				# print(len(mask))
-				# print(len(mask[0]))
-				# print(len(mask[0][0]))
+				# dimension = numpy.array(imgB).shape
+				# # print(dimension)
+				# mask = cv2.warpPerspective(numpy.ones(dimension), M, (width, height))
+				# # print(len(mask))
+				# # print(len(mask[0]))
+				# # print(len(mask[0][0]))
 
-				counter = 0
+				# counter = 0
 				# May not need * 3 since it's rgb
 				# Going through the x3.
 				# print(numpy.array(mask)[:,:,2])
@@ -295,15 +302,15 @@ class HomographyTrans(object):
 				# for i in range(len(newarray)):
 				# 	print("Contents", newarray[i])
 
-				for j in range(len(mask[0][0])):
-					# Going through the width.
-					for k in range(len(mask[0])):
-						# Going through the height.
-						for z in range(len(mask)):
-							if (mask[z][k][j] != 0):
-								mask[z][k][j] = 1
-								Mask[counter][i] = 1
-							counter+=1
+				# for r in range(len(mask[0][0])):
+				# 	# Going through the width.
+				# 	for w in range(len(mask[0])):
+				# 		# Going through the height.
+				# 		for h in range(len(mask)):
+				# 			if (mask[z][k][j] != 0):
+				# 				mask[z][k][j] = 1
+				# 				Mask[counter][i] = 1
+				# 			counter+=1
 
 				#print(Mask[1])
 				print("Homography frame #: ", i)
