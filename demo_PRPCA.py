@@ -61,7 +61,7 @@ img = imread("Data/tennis/00000.jpg")
 height = len(img)
 # Longer. i.e: 854
 width = len(img[0])
-percentage = 0.39
+percentage = 0.50
 newHeight = float(height * percentage)
 newWidth = float(width * percentage)
 

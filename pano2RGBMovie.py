@@ -4,10 +4,10 @@ import matplotlib.pyplot as plt
 
 
 def pano2RGBMovie_Main(frame, Mask, height, width, num_of_frames, moviesize):
-	import pdb; pdb.set_trace()
 	movie_frames = numpy.zeros((moviesize[1], moviesize[2], 3, num_of_frames))
 
 	for i in range(num_of_frames):
+		#import pdb; pdb.set_trace()
 		# May or may not have to add 1 to the height times width. I can't add it because it's too large by 1 to be reshaped into height by width.
 		Mask_frame = numpy.reshape(numpy.array(Mask)[0 : height * width, i], (height, width), order="F")
 		indicesOfValuesMatchingGivenConditions = numpy.where(Mask_frame)
@@ -21,12 +21,15 @@ def pano2RGBMovie_Main(frame, Mask, height, width, num_of_frames, moviesize):
 		movedPoints_temp = numpy.array([corners[0,:], corners[3,:], corners[1,:], corners[2,:]])
 		fixedPoints = numpy.array([fixedPoints_temp[:,1], fixedPoints_temp[:,0]], numpy.float32)
 		movingPoints = numpy.array([movedPoints_temp[:,1], movedPoints_temp[:,0]], numpy.float32)
-		import pdb; pdb.set_trace()
+		#import pdb; pdb.set_trace()
 		tform = cv2.getPerspectiveTransform(movingPoints.transpose(),fixedPoints.transpose())
-		image = cv2.warpPerspective(frame[:,:,:,0], tform, (width, height))
+		image = cv2.warpPerspective(frame[:,:,:,i], tform, (width, height))
 
-		plt.imshow(image)
+		newImage = cv2.resize(image, (moviesize[2],moviesize[1]))
+
+		plt.imshow(newImage)
 		plt.show()
+
 
 
 # movie = zeros(moviesize(1), moviesize(2), 3, num_of_frames);
