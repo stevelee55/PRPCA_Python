@@ -14,7 +14,7 @@ def pano2RGBMovie_Main(frame, Mask, height, width, num_of_frames, moviesize):
 		indices = numpy.array(numpy.where(numpy.array(Mask_frame) > (numpy.amax(Mask_frame[:]) / 2))).transpose()
 		# May be needed.
 		# indices = indices.transpose()
-		minimumValues = numpy.amin(numpy.matmul(indices, numpy.array([[1,1],[-1,-1],[1,-1],[-1,1]]).transpose()), axis=0)
+		minimumValues = numpy.argmin(numpy.matmul(indices, numpy.array([[1,1],[-1,-1],[1,-1],[-1,1]]).transpose()), axis=0)
 		corners = indices[minimumValues,:]
 		print(corners)
 		fixedPoints_temp = numpy.array([[0,0],[height - 1,0],[height - 1,width - 1],[0, width - 1]])
@@ -23,7 +23,7 @@ def pano2RGBMovie_Main(frame, Mask, height, width, num_of_frames, moviesize):
 		movingPoints = numpy.array([movedPoints_temp[:,1], movedPoints_temp[:,0]], numpy.float32)
 		import pdb; pdb.set_trace()
 		tform = cv2.getPerspectiveTransform(movingPoints.transpose(),fixedPoints.transpose())
-		image = cv2.warpPerspective(frame[0], tform, (width, height))
+		image = cv2.warpPerspective(frame[:,:,:,0], tform, (width, height))
 
 		plt.imshow(image)
 		plt.show()
