@@ -10,7 +10,20 @@ from skimage.color import rgb2gray
 import matplotlib.transforms
 
 A = [[[1, 10, -2], [1, 10, -2], [1, 10, -1]], [[1, 10, -5], [1, 10, -2], [1, 10, -1]], [[1, 10, -2], [1, 10, -2], [1, 10, -1]], [[1, 10, -2], [1, 10, -2], [1, 10, -1]]]
-B = [2,3,4,5]
+B = numpy.array([[2,3,4,5],
+				[1,3,4,5]])
+# print(B.shape)
+
+# Goes througuh each row then goes on to the next row.
+
+C = numpy.array([[1,3,1,1],
+				[1,3,1,1]])
+
+print(numpy.amin(B, axis=0))
+
+indices = numpy.array(numpy.where(B > (C[:] / 2)))
+print(numpy.array([[1,1],[-1,-1],[1,-1],[-1,1]]).shape)
+
 # U,S,V = numpy.linalg.svd(A, full_matrices=False)
 # print(U)
 # print(S)
@@ -19,16 +32,18 @@ B = [2,3,4,5]
 # print(New)
 
 #arr = numpy.zeros((649446 - 35))
-print(A)
-print(numpy.array(A).shape)
-arrtrans = numpy.array(A)[:,:,2] #numpy.array(A)[:,0,2] #numpy.array(A)[:,0] #numpy.transpose(numpy.array([B]))
-print(arrtrans)
-print(arrtrans.shape)
+# print(A)
+# print(numpy.array(A).shape)
+# arrtrans = numpy.array(A)[:,:,2] #numpy.array(A)[:,0,2] #numpy.array(A)[:,0] #numpy.transpose(numpy.array([B]))
+# print(arrtrans)
+# print(arrtrans.shape)
 
-if int(0) == 0.0:
-	print("They're the same")
+# if int(0) == 0.0:
+# 	print("They're the same")
 
-# img = imread("Data/newData/Test_Grace/frame1.jpg") #, cv2.IMREAD_GRAYSCALE)
+# Get the image and rotate it on purpose.
+img = imread("Data/newData/Test_Grace/frame1.jpg") #, cv2.IMREAD_GRAYSCALE)
+
 
 # print(img)
 

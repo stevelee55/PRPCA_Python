@@ -8,7 +8,7 @@ COPY pano2RGBMovie.py pano2RGBMovie.py
 COPY PRPCA_RGB.py PRPCA_RGB.py
 COPY adjustLS2_RGB.py adjustLS2_RGB.py
 COPY ./Data/tennis ./Data/tennis
-RUN pip install numpy
+RUN pip installsdf numpy
 RUN pip install matplotlib
 RUN pip install opencv-python
 RUN pip install opencv-contrib-python

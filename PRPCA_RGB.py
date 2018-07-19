@@ -5,6 +5,7 @@ from improvedRobustPCA import improvedRobustPCA
 from adjustLS2_RGB import adjustLS2_RGB_Main
 import numpy
 import matplotlib.pyplot as plt
+from pano2RGBMovie import pano2RGBMovie_Main
 import boto3
 
 # print("VERSION", boto3.__version__)
@@ -208,6 +209,11 @@ class PRPCA_RGB(object):
 		imageeee = S_RPCA[:,:,:,0]
 		#plt.imshow(imageeee)
 		#plt.savefig("S.jpg")
+
+		# (L_RPCA, Mask, height, width, size(MovMat,4), size(MovMat));
+
+		MovMatLen = 35
+		pano2RGBMovie_Main(L_RPCA, Mask, height, width, MovMatLen,numpy.array(movmat).shape)
 
 
 
