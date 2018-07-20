@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 def pano2RGBMovie_Main(frame, Mask, height, width, num_of_frames, moviesize):
 	movie_frames = numpy.zeros((moviesize[1], moviesize[2], 3, num_of_frames))
 
+
 	for i in range(num_of_frames):
 		#import pdb; pdb.set_trace()
 		# May or may not have to add 1 to the height times width. I can't add it because it's too large by 1 to be reshaped into height by width.
@@ -27,8 +28,7 @@ def pano2RGBMovie_Main(frame, Mask, height, width, num_of_frames, moviesize):
 
 		newImage = cv2.resize(image, (moviesize[2],moviesize[1]))
 
-		plt.imshow(newImage)
-		plt.show()
+		
 
 
 
