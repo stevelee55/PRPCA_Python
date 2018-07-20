@@ -8,66 +8,74 @@
 #
 # June 18, 2018
 
-# Necessary libraries.
+# Necessary Libraries.
+
 import os
-# the code must be run by saying python3.6 <filename>
 from imread import imread
 import matplotlib.pyplot as plt
 from skimage import transform
 import cv2
 import numpy
 
-# Classes
+# Custom Class.
+
 from PRPCA_RGB import PRPCA_RGB
 
-#######################################################
-# Function Definitions
-def HomographyTrans(movmat):
-	return Y, Mask, height, width, T
+# Input Variables.
 
-####### PRPCA_RGB
-instance = PRPCA_RGB()
-#instance.parseInputs(2,3)
+# If 'useRawVideo' is set to True, it uses 'rawVideoPath',
+# which involves separating the video into frames. Otherwise,
+# the pre-separated video frames will be used, which are located
+# at the path indicated by 'videoFramesPath'.
+useRawVideo = False
+rawVideoPath = "./Data/newData/Test/moving.MOV"
+videoFramesPath = "./Data/tennis"
 
 
-#######################################################
+# Helper Functions.
 
-# L + S RGB
+# Separates given video at rawVideoPath into frames if
+# 'useRawVideo' is set to True.
+if (useRawVideo):
+	from VideoToFrames import separateVideoIntoFrames
+	separateVideoIntoFrames(rawVideoPath, 3, videoFramesPath)
 
-# Load Data
 
-# Accessing the local data (frames) at a speicifc path
-# resizing it by 0.5, and storing them in a 4-D array.
-# The 4-D array/Matrix is actually:
-# "MovMat is a height * width * 3 * #frame video matrix"
-# Is it * because it's RGB?
+# Below does L + S RGB.
 
-# Gets the list of names of the frames along with the
-# number of total frames.
-contents = os.listdir("./Data/tennis")
-contents.sort()
-# Getting only the ones that have the certain extension.
-# In this case, only .jpg
-videoFrames = []
-for content in contents:
-	if content.endswith('.jpg'):
-		videoFrames.append(content)
+# Getting the list of frames' names and sorting them.
+fileNames = os.listdir(videoFramesPath)
 
-numberOfVideoFrames = len(videoFrames)
+# Getting and saving each of the frame data using the
+# list of frames' names.
+videoFrameNames = []
+for fileName in fileNames:
+	if fileName.endswith('.jpg'):
+		videoFrameNames.append(fileName)
+# Sorting the videoFrameNames, because time to time,
+# the frames get read in randomly, which affects the
+# whole program.
+videoFrameNames.sort()
+# Getting the total number of video frames.
+numberOfVideoFrames = len(videoFrameNames)
 
-# Getting the new width and height for the video frame.
-img = imread("Data/tennis/00000.jpg")
-# Shorter. i.e: 480
-height = len(img)
-# Longer. i.e: 854
-width = len(img[0])
-percentage = 0.50
-newHeight = float(height * percentage)
-newWidth = float(width * percentage)
+# Getting the width and height of the video using the
+# first frame of the video.
+firstFrame = imread(videoFramesPath + "/" + videoFrameNames[0])
+# Keep in mind that the width of the video is usually shorter
+# when it is in a landscape.
+height = len(firstFrame)
+width = len(firstFrame[0])
+# Between 0.0 -> 1.0. 1.0 is original image size.
+percentageToResizeTo = 0.50
+newHeight = float(height * percentageToResizeTo)
+newWidth = float(width * percentageToResizeTo)
 
 # Initializing the 4-D Matrix with 0 values.
 # Apparently the matrix is height * width * 3 * # of frames of the video.
 RGB = 3
+# The MovMat is a 4-D array/Matrix that has the dimension of
+# height * width * 3 * # of frames.
 MovMat = [[[[0 for x in range(height)] for y in range(width)] for m in range(RGB)] for z in range(numberOfVideoFrames)]
 
 # This is 0-Indexed Matrix. Goes through every single
@@ -109,6 +117,7 @@ for i in range(numberOfFramesToUse):
 
 # RGB PRPCA
 # Getting the return value and saving them.
+instance = PRPCA_RGB()
 RPCA_image, L, S, L_RPCA, S_RPCA = instance.PRPCA_RGB_Main(NewMovMat)
 
 
