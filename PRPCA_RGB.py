@@ -213,11 +213,11 @@ class PRPCA_RGB(object):
 		# (L_RPCA, Mask, height, width, size(MovMat,4), size(MovMat));
 
 		MovMatLen = 35
-		pano2RGBMovie_Main(L_RPCA, Mask, height, width, MovMatLen,numpy.array(movmat).shape)
+		movie_frames = pano2RGBMovie_Main(L_RPCA, Mask, height, width, MovMatLen,numpy.array(movmat).shape)
 
 
 
-		return "hello world", [2,3], "yay", "123", 3
+		return movie_frames #"hello world", [2,3], "yay", "123", 3
 
 
 

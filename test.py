@@ -8,10 +8,17 @@ import cv2
 import numpy
 from skimage.color import rgb2gray
 import matplotlib.transforms
+import imageio
 
-from VideoToFrames import separateVideoIntoFrames
+# from VideoToFrames import separateVideoIntoFrames
+# separateVideoIntoFrames("./Data/newData/Test/moving.MOV", 3, "./Data")
 
-separateVideoIntoFrames("./Data/newData/Test/moving.MOV", 3, "./Data")
+images = []
+# Create Gif.
+for frameCount in range(35):
+	images.append(imageio.imread("./Data/newData/Test/frame%d.jpg" % frameCount))
+
+imageio.mimsave("L_RPCA.gif", images, duration=0.05)
 
 # A = [[[1, 10, -2], [1, 10, -2], [1, 10, -1]], [[1, 10, -5], [1, 10, -2], [1, 10, -1]], [[1, 10, -2], [1, 10, -2], [1, 10, -1]], [[1, 10, -2], [1, 10, -2], [1, 10, -1]]]
 # B = numpy.array([[2,3,4,5],

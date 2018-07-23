@@ -16,10 +16,23 @@ import matplotlib.pyplot as plt
 from skimage import transform
 import cv2
 import numpy
+import math
+import imageio
+
+
+
+# Need to put a method to get the data from S3 Bucket.
+# This could be done by seeing if the flag is set to S3,
+# and if it is set to S3, then call the S3 first to
+# download the frames or the video and then call the rest
+# of the functions.
+
+
 
 # Custom Class.
 
 from PRPCA_RGB import PRPCA_RGB
+
 
 # Input Variables.
 
@@ -30,6 +43,10 @@ from PRPCA_RGB import PRPCA_RGB
 useRawVideo = False
 rawVideoPath = "./Data/newData/Test/moving.MOV"
 videoFramesPath = "./Data/tennis"
+# Between 0.0 -> 1.0. 1.0 is original image size.
+percentageToResizeTo = 0.50 # 0.5 is too slow for python, takes about 15 mins, but 0.39 or 0.43 gives decent results.
+# Needs to be less than or equal to the numberOfVideoFrames.
+numberOfFramesToUse = 35 # For now, 35 is ideal.
 
 
 # Helper Functions.
@@ -66,23 +83,19 @@ firstFrame = imread(videoFramesPath + "/" + videoFrameNames[0])
 # when it is in a landscape.
 height = len(firstFrame)
 width = len(firstFrame[0])
-# Between 0.0 -> 1.0. 1.0 is original image size.
-percentageToResizeTo = 0.50
-newHeight = float(height * percentageToResizeTo)
-newWidth = float(width * percentageToResizeTo)
+newHeight = math.floor(float(height * percentageToResizeTo))
+newWidth = math.floor(float(width * percentageToResizeTo))
 
-# Initializing the 4-D Matrix with 0 values.
-# Apparently the matrix is height * width * 3 * # of frames of the video.
-RGB = 3
+# Initializing the 4-D Matrix with 0s.
+RGBCount = 3
 # The MovMat is a 4-D array/Matrix that has the dimension of
 # height * width * 3 * # of frames.
-MovMat = [[[[0 for x in range(height)] for y in range(width)] for m in range(RGB)] for z in range(numberOfVideoFrames)]
+MovMat = [[[[0 for x in range(newHeight)] for y in range(newWidth)] for m in range(RGBCount)] for z in range(numberOfFramesToUse)]
 
-# This is 0-Indexed Matrix. Goes through every single
-# frame and sets it to the MovMat.
-for i in range(numberOfVideoFrames):
+# Goes through every single frame and sets it to the MovMat.
+for i in range(numberOfFramesToUse):
 	# Getting the specific frame and saving in the 4-D array.
-	img = imread("./Data/tennis/" + videoFrames[i]) #newData/CorruptedClip/" + "frame" + str(i + 1) + ".jpg")
+	frame = imread(videoFramesPath + "/" + videoFrameNames[i]) #newData/CorruptedClip/" + "frame" + str(i + 1) + ".jpg")
 	# The interesting thing about this code is that when it resizes, it does the "im2double" automatically.
 	# Still quiet don't understand why "im2double" is needed in the Matlab code.
 	# One thing to keep in mind that the pixel values are differ by very little when the values are compared.
@@ -90,24 +103,23 @@ for i in range(numberOfVideoFrames):
 	# In the Matlab code, the function imresize changes the values dramatically, but it is later fixed
 	#by the im2double.
 	# cv2.resize doesn't do im2double automatically so normalizing needs to be done later.
-	MovMat[i] = cv2.resize(img, None, fx=percentage, fy=percentage)
+	MovMat[i] = cv2.resize(frame, None, fx=percentageToResizeTo, fy=percentageToResizeTo)
 
 	#Description
 	#example
 	#B = imresize(A,scale) returns image B that is scale times the size of A. The input image A can be a grayscale, RGB, or binary image. If A has more than two dimensions, imresize only resizes the first two dimensions. If scale is in the range [0, 1], B is smaller than A. If scale is greater than 1, B is larger than A. By default, imresize uses bicubic interpolation.
 
 
-# Needs to be less than or equal to the numberOfVideoFrames.
-numberOfFramesToUse = 35
+
 #Getting the certain number of frames for the computation.
 
 # Arvin. Julia. Calilng Julia.rpca. Julia optimization, precompiling, which makes it faster. Registering do it in python, part after it, use Julia, which precompilation, there is a way to do it. 
 # Julia is pretty easy. Figure out inefficient
 
 # Email the results to him. 
-NewMovMat = [[[[0 for x in range(height)] for y in range(width)] for m in range(RGB)] for z in range(numberOfFramesToUse)]
-for i in range(numberOfFramesToUse):
-	NewMovMat[i] = MovMat[i]
+# NewMovMat = [[[[0 for x in range(height)] for y in range(width)] for m in range(RGB)] for z in range(numberOfFramesToUse)]
+# for i in range(numberOfFramesToUse):
+# 	NewMovMat[i] = MovMat[i]
 #Size should be 35.
 #print(len(NewMovMat))
 
@@ -118,7 +130,16 @@ for i in range(numberOfFramesToUse):
 # RGB PRPCA
 # Getting the return value and saving them.
 instance = PRPCA_RGB()
-RPCA_image, L, S, L_RPCA, S_RPCA = instance.PRPCA_RGB_Main(NewMovMat)
+L_RPCA = instance.PRPCA_RGB_Main(MovMat)
+#RPCA_image, L, S, L_RPCA, S_RPCA = instance.PRPCA_RGB_Main(MovMat)
+
+print("FINAL",len(L_RPCA))
+images = []
+# Create Gif.
+for frameCount in range(35):
+	images.append(imageio.imread("./Data/newData/Test/frame%d.jpg" % frameCount))
+
+imageio.mimsave("L_RPCA.gif", images, duration=0.05)
 
 
 # Showing the results visually.

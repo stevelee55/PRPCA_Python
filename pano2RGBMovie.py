@@ -1,6 +1,7 @@
 import numpy
 import cv2
 import matplotlib.pyplot as plt
+from PIL import Image
 
 
 def pano2RGBMovie_Main(frame, Mask, height, width, num_of_frames, moviesize):
@@ -8,7 +9,7 @@ def pano2RGBMovie_Main(frame, Mask, height, width, num_of_frames, moviesize):
 
 
 	for i in range(num_of_frames):
-		#import pdb; pdb.set_trace()
+		# import pdb; pdb.set_trace()
 		# May or may not have to add 1 to the height times width. I can't add it because it's too large by 1 to be reshaped into height by width.
 		Mask_frame = numpy.reshape(numpy.array(Mask)[0 : height * width, i], (height, width), order="F")
 		indicesOfValuesMatchingGivenConditions = numpy.where(Mask_frame)
@@ -17,7 +18,6 @@ def pano2RGBMovie_Main(frame, Mask, height, width, num_of_frames, moviesize):
 		# indices = indices.transpose()
 		minimumValues = numpy.argmin(numpy.matmul(indices, numpy.array([[1,1],[-1,-1],[1,-1],[-1,1]]).transpose()), axis=0)
 		corners = indices[minimumValues,:]
-		print(corners)
 		fixedPoints_temp = numpy.array([[0,0],[height - 1,0],[height - 1,width - 1],[0, width - 1]])
 		movedPoints_temp = numpy.array([corners[0,:], corners[3,:], corners[1,:], corners[2,:]])
 		fixedPoints = numpy.array([fixedPoints_temp[:,1], fixedPoints_temp[:,0]], numpy.float32)
@@ -26,9 +26,22 @@ def pano2RGBMovie_Main(frame, Mask, height, width, num_of_frames, moviesize):
 		tform = cv2.getPerspectiveTransform(movingPoints.transpose(),fixedPoints.transpose())
 		image = cv2.warpPerspective(frame[:,:,:,i], tform, (width, height))
 
+		# print("Imagedata",image)
+		# plt.imshow(image)
+		# plt.show()
+
 		newImage = cv2.resize(image, (moviesize[2],moviesize[1]))
 
-		
+		# plt.imshow(newImage)
+		# plt.show()
+
+		result = Image.fromarray((newImage * 255).astype(numpy.uint8))
+		result.save("./Data/newData/Test/frame%d.jpg" % i)
+		#cv2.imwrite("./Data/newData/Test/frame%d.jpg" % i, result)
+		movie_frames[:,:,:,i] = result
+
+
+	return movie_frames
 
 
 
