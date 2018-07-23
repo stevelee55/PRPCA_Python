@@ -212,8 +212,8 @@ class PRPCA_RGB(object):
 
 		# (L_RPCA, Mask, height, width, size(MovMat,4), size(MovMat));
 
-		MovMatLen = 35
-		movie_frames = pano2RGBMovie_Main(L_RPCA, Mask, height, width, MovMatLen,numpy.array(movmat).shape)
+		numberOfFrames = len(movmat)
+		movie_frames = pano2RGBMovie_Main(L_RPCA, Mask, height, width, numberOfFrames,numpy.array(movmat).shape)
 
 
 

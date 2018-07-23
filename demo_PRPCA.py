@@ -18,15 +18,7 @@ import cv2
 import numpy
 import math
 import imageio
-
-
-
-# Need to put a method to get the data from S3 Bucket.
-# This could be done by seeing if the flag is set to S3,
-# and if it is set to S3, then call the S3 first to
-# download the frames or the video and then call the rest
-# of the functions.
-
+import boto3
 
 
 # Custom Class.
@@ -34,22 +26,37 @@ import imageio
 from PRPCA_RGB import PRPCA_RGB
 
 
+# Helper Functions.
+
+# Downloads raw video data from S3 bucket. 
+def downloadVideoDataFromS3Named(videoTitle, videoPath):
+	# Download the file.
+	# Connecting to S3.
+	# Do not hard code credentials
+	# boto3.client not available if there are spaces.
+	client = boto3.client("s3", aws_access_key_id="AKIAIXW57FAC5P2E3ILA", aws_secret_access_key="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")
+	client.download_file("vsp-userfiles-mobilehub-602139379", "userData/PRPCA_RAW.mov", "./Data/newData/Test/PRPCA_RAW.mov")
+
+	# Store at the given video path.
+
 # Input Variables.
 
 # If 'useRawVideo' is set to True, it uses 'rawVideoPath',
 # which involves separating the video into frames. Otherwise,
 # the pre-separated video frames will be used, which are located
 # at the path indicated by 'videoFramesPath'.
-useRawVideo = False
-rawVideoPath = "./Data/newData/Test/moving.MOV"
-videoFramesPath = "./Data/tennis"
+useRawVideo = True
+rawVideoPath = "./Data/newData/Test/PRPCA_RAW.mov"
+videoFramesPath = "./Data/newData/Test" #"./Data/tennis"
 # Between 0.0 -> 1.0. 1.0 is original image size.
-percentageToResizeTo = 0.50 # 0.5 is too slow for python, takes about 15 mins, but 0.39 or 0.43 gives decent results.
+percentageToResizeTo = 0.23 # 0.5 is too slow for python, takes about 15 mins, but 0.39 or 0.43 gives decent results.
+getVideoDataFromS3 = False
 # Needs to be less than or equal to the numberOfVideoFrames.
-numberOfFramesToUse = 35 # For now, 35 is ideal.
+numberOfFramesToUse = 25 # This may be changed based on how many frames are retreived from the video.
 
-
-# Helper Functions.
+# Downloading video data from S3 bucket if specified.
+if (getVideoDataFromS3):
+	downloadVideoDataFromS3Named(".",".")
 
 # Separates given video at rawVideoPath into frames if
 # 'useRawVideo' is set to True.
@@ -76,15 +83,24 @@ videoFrameNames.sort()
 # Getting the total number of video frames.
 numberOfVideoFrames = len(videoFrameNames)
 
+# Deciding how many frames to actually use based on number of total video frames.
+# If the user specified number frames is less than the total number of frames, use
+# specified number of frames. Else, use max number of available frames.
+if (numberOfFramesToUse > numberOfVideoFrames):
+	numberOfFramesToUse = numberOfVideoFrames
+
 # Getting the width and height of the video using the
 # first frame of the video.
 firstFrame = imread(videoFramesPath + "/" + videoFrameNames[0])
+
 # Keep in mind that the width of the video is usually shorter
 # when it is in a landscape.
 height = len(firstFrame)
 width = len(firstFrame[0])
 newHeight = math.floor(float(height * percentageToResizeTo))
 newWidth = math.floor(float(width * percentageToResizeTo))
+print("Width",newWidth)
+print("Height",newHeight)
 
 # Initializing the 4-D Matrix with 0s.
 RGBCount = 3
@@ -92,40 +108,16 @@ RGBCount = 3
 # height * width * 3 * # of frames.
 MovMat = [[[[0 for x in range(newHeight)] for y in range(newWidth)] for m in range(RGBCount)] for z in range(numberOfFramesToUse)]
 
-# Goes through every single frame and sets it to the MovMat.
+# Goes through every single frame and sets it to the MovMat. Starts from frame0.jpg.
 for i in range(numberOfFramesToUse):
 	# Getting the specific frame and saving in the 4-D array.
-	frame = imread(videoFramesPath + "/" + videoFrameNames[i]) #newData/CorruptedClip/" + "frame" + str(i + 1) + ".jpg")
-	# The interesting thing about this code is that when it resizes, it does the "im2double" automatically.
-	# Still quiet don't understand why "im2double" is needed in the Matlab code.
-	# One thing to keep in mind that the pixel values are differ by very little when the values are compared.
-	#For instance, 0.24117647 0.4372549  0.68431373 is for python, 0.2392, 0.4353, 0.6824 in matlab.
-	# In the Matlab code, the function imresize changes the values dramatically, but it is later fixed
-	#by the im2double.
+	frame = imread(videoFramesPath + "/" + "frame" + str(i) + ".jpg")
 	# cv2.resize doesn't do im2double automatically so normalizing needs to be done later.
 	MovMat[i] = cv2.resize(frame, None, fx=percentageToResizeTo, fy=percentageToResizeTo)
 
-	#Description
-	#example
-	#B = imresize(A,scale) returns image B that is scale times the size of A. The input image A can be a grayscale, RGB, or binary image. If A has more than two dimensions, imresize only resizes the first two dimensions. If scale is in the range [0, 1], B is smaller than A. If scale is greater than 1, B is larger than A. By default, imresize uses bicubic interpolation.
-
-
-
-#Getting the certain number of frames for the computation.
 
 # Arvin. Julia. Calilng Julia.rpca. Julia optimization, precompiling, which makes it faster. Registering do it in python, part after it, use Julia, which precompilation, there is a way to do it. 
 # Julia is pretty easy. Figure out inefficient
-
-# Email the results to him. 
-# NewMovMat = [[[[0 for x in range(height)] for y in range(width)] for m in range(RGB)] for z in range(numberOfFramesToUse)]
-# for i in range(numberOfFramesToUse):
-# 	NewMovMat[i] = MovMat[i]
-#Size should be 35.
-#print(len(NewMovMat))
-
-# These are used to present and show the imported image.
-#plt.imshow(img)
-#plt.show()
 
 # RGB PRPCA
 # Getting the return value and saving them.
@@ -136,10 +128,14 @@ L_RPCA = instance.PRPCA_RGB_Main(MovMat)
 print("FINAL",len(L_RPCA))
 images = []
 # Create Gif.
-for frameCount in range(35):
+for frameCount in range(numberOfFramesToUse):
 	images.append(imageio.imread("./Data/newData/Test/frame%d.jpg" % frameCount))
 
-imageio.mimsave("L_RPCA.gif", images, duration=0.05)
+imageio.mimsave("L_RPCA.gif", images, duration=0.08)
+
+# Upload gif to the S3.
+client = boto3.client("s3", aws_access_key_id="AKIAIXW57FAC5P2E3ILA", aws_secret_access_key="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")
+client.upload_file("L_RPCA.gif", "vsp-userfiles-mobilehub-602139379", "userData/PRPCA_Finished.gif")
 
 
 # Showing the results visually.

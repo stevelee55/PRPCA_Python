@@ -9,16 +9,20 @@ import numpy
 from skimage.color import rgb2gray
 import matplotlib.transforms
 import imageio
+import boto3
 
 # from VideoToFrames import separateVideoIntoFrames
 # separateVideoIntoFrames("./Data/newData/Test/moving.MOV", 3, "./Data")
 
-images = []
-# Create Gif.
-for frameCount in range(35):
-	images.append(imageio.imread("./Data/newData/Test/frame%d.jpg" % frameCount))
+client = boto3.client("s3", aws_access_key_id="AKIAIXW57FAC5P2E3ILA", aws_secret_access_key="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")
+client.download_file("vsp-userfiles-mobilehub-602139379", "userData/image.png", "./DownloadedFile.png")
 
-imageio.mimsave("L_RPCA.gif", images, duration=0.05)
+# images = []
+# # Create Gif.
+# for frameCount in range(35):
+# 	images.append(imageio.imread("./Data/newData/Test/frame%d.jpg" % frameCount))
+
+# imageio.mimsave("L_RPCA.gif", images, duration=0.05)
 
 # A = [[[1, 10, -2], [1, 10, -2], [1, 10, -1]], [[1, 10, -5], [1, 10, -2], [1, 10, -1]], [[1, 10, -2], [1, 10, -2], [1, 10, -1]], [[1, 10, -2], [1, 10, -2], [1, 10, -1]]]
 # B = numpy.array([[2,3,4,5],

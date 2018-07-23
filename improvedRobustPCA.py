@@ -113,7 +113,7 @@ class improvedRobustPCA(object):
 				S = TtransArray * self.soft(T * (Sbar - tau * Z), tau * lambdaS)
 				print("S",S)
 
-			if (nIters >= 2):  # or ((deltaL(nIters) < delta) and ()
+			if (nIters >= maxIters):  # or ((deltaL(nIters) < delta) and ()
 				done = True
 			print("Iteration #:", nIters)
 		   #import pdb; pdb.set_trace()
