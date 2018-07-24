@@ -8,11 +8,9 @@ import matplotlib.pyplot as plt
 from pano2RGBMovie import pano2RGBMovie_Main
 import boto3
 
-# print("VERSION", boto3.__version__)
-
-import matplotlib
-# Force matplotlib to not use any Xwindows backend.
-matplotlib.use('Agg')
+# import matplotlib
+# # # Force matplotlib to not use any Xwindows backend.
+# # matplotlib.use('Agg')
 
 class PRPCA_RGB(object):
 

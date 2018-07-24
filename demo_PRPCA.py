@@ -19,25 +19,37 @@ import numpy
 import math
 import imageio
 import boto3
+from PIL import Image
 
 
 # Custom Class.
 
 from PRPCA_RGB import PRPCA_RGB
 
+###############################################################
 
 # Helper Functions.
 
 # Downloads raw video data from S3 bucket. 
-def downloadVideoDataFromS3Named(videoTitle, videoPath):
+def downloadVideoDataFromS3Named(rawVideoName, rawVideoPath):
 	# Download the file.
 	# Connecting to S3.
 	# Do not hard code credentials
 	# boto3.client not available if there are spaces.
 	client = boto3.client("s3", aws_access_key_id="AKIAIXW57FAC5P2E3ILA", aws_secret_access_key="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")
-	client.download_file("vsp-userfiles-mobilehub-602139379", "userData/PRPCA_RAW.mov", "./Data/newData/Test/PRPCA_RAW.mov")
+	client.download_file("vsp-userfiles-mobilehub-602139379", "userData/" + rawVideoName, rawVideoPath + "/" + rawVideoName)
 
 	# Store at the given video path.
+
+def downloadParameterDataFromS3(parameterDataName, parameterDataPath):
+	client = boto3.client("s3", aws_access_key_id="AKIAIXW57FAC5P2E3ILA", aws_secret_access_key="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")
+	client.download_file("vsp-userfiles-mobilehub-602139379", "userData/" + parameterDataName, parameterDataPath + "/" + parameterDataName)
+
+def parseDownloadedParameterData():
+	return "Hello"
+
+
+###############################################################
 
 # Input Variables.
 
@@ -46,29 +58,43 @@ def downloadVideoDataFromS3Named(videoTitle, videoPath):
 # the pre-separated video frames will be used, which are located
 # at the path indicated by 'videoFramesPath'.
 useRawVideo = True
-rawVideoPath = "./Data/newData/Test/PRPCA_RAW.mov"
-videoFramesPath = "./Data/newData/Test" #"./Data/tennis"
-# Between 0.0 -> 1.0. 1.0 is original image size.
-percentageToResizeTo = 0.23 # 0.5 is too slow for python, takes about 15 mins, but 0.39 or 0.43 gives decent results.
+rawVideoName = "PRPCA_RAW.mov"
+rawVideoPath = "." #"./Data/newData/Test/PRPCA_RAW.mov"
+videoFramesPath = "./TestTest" #"." #"./Data/newData/Test" #"./Data/tennis"
+parameterDataName = "PRPCA_parameters.txt"
+parameterDataPath = "./TestTest"
+resultOutputPath = "./TestTest"
+	# # Between 0.0 -> 1.0. 1.0 is original image size.
+	# percentageToResizeTo = 0.23 # 0.5 is too slow for python, takes about 15 mins, but 0.39 or 0.43 gives decent results.
 getVideoDataFromS3 = False
 # Needs to be less than or equal to the numberOfVideoFrames.
 numberOfFramesToUse = 25 # This may be changed based on how many frames are retreived from the video.
+getParameterDataFromS3 = False
+
+
+###############################################################
 
 # Downloading video data from S3 bucket if specified.
 if (getVideoDataFromS3):
-	downloadVideoDataFromS3Named(".",".")
+	downloadVideoDataFromS3Named(rawVideoName, rawVideoPath)
 
 # Separates given video at rawVideoPath into frames if
 # 'useRawVideo' is set to True.
 if (useRawVideo):
 	from VideoToFrames import separateVideoIntoFrames
-	separateVideoIntoFrames(rawVideoPath, 3, videoFramesPath)
+	separateVideoIntoFrames(rawVideoPath, rawVideoName, 3, videoFramesPath)
 
+# Getting the parameter data from S3 bucket if specified.
+if (getParameterDataFromS3):
+	parsedData = downloadParameterDataFromS3(parameterDataName, parameterDataPath)
+
+
+###############################################################
 
 # Below does L + S RGB.
 
 # Getting the list of frames' names and sorting them.
-fileNames = os.listdir(videoFramesPath)
+fileNames = os.listdir(videoFramesPath + "/")
 
 # Getting and saving each of the frame data using the
 # list of frames' names.
@@ -79,7 +105,8 @@ for fileName in fileNames:
 # Sorting the videoFrameNames, because time to time,
 # the frames get read in randomly, which affects the
 # whole program.
-videoFrameNames.sort()
+videoFrameNames.sort(key=lambda f: int(''.join(filter(str.isdigit, f))))
+print(videoFrameNames)
 # Getting the total number of video frames.
 numberOfVideoFrames = len(videoFrameNames)
 
@@ -97,8 +124,14 @@ firstFrame = imread(videoFramesPath + "/" + videoFrameNames[0])
 # when it is in a landscape.
 height = len(firstFrame)
 width = len(firstFrame[0])
-newHeight = math.floor(float(height * percentageToResizeTo))
-newWidth = math.floor(float(width * percentageToResizeTo))
+# Calculate the ideal video frame size based on the recommended values.
+recommendedWidth = 427.0
+multiplier = 1.0
+if (width > recommendedWidth):
+	multiplier = recommendedWidth / width
+
+newHeight = math.floor(float(height * multiplier))
+newWidth = math.floor(float(width * multiplier))
 print("Width",newWidth)
 print("Height",newHeight)
 
@@ -111,9 +144,9 @@ MovMat = [[[[0 for x in range(newHeight)] for y in range(newWidth)] for m in ran
 # Goes through every single frame and sets it to the MovMat. Starts from frame0.jpg.
 for i in range(numberOfFramesToUse):
 	# Getting the specific frame and saving in the 4-D array.
-	frame = imread(videoFramesPath + "/" + "frame" + str(i) + ".jpg")
+	frame = imread(videoFramesPath + "/" + videoFrameNames[i])
 	# cv2.resize doesn't do im2double automatically so normalizing needs to be done later.
-	MovMat[i] = cv2.resize(frame, None, fx=percentageToResizeTo, fy=percentageToResizeTo)
+	MovMat[i] = cv2.resize(frame, None, fx=multiplier, fy=multiplier)
 
 
 # Arvin. Julia. Calilng Julia.rpca. Julia optimization, precompiling, which makes it faster. Registering do it in python, part after it, use Julia, which precompilation, there is a way to do it. 
@@ -129,13 +162,15 @@ print("FINAL",len(L_RPCA))
 images = []
 # Create Gif.
 for frameCount in range(numberOfFramesToUse):
-	images.append(imageio.imread("./Data/newData/Test/frame%d.jpg" % frameCount))
+	frameData = L_RPCA[:,:,:,frameCount]
+	image = numpy.array(Image.fromarray((frameData * 255).astype(numpy.uint8)))
+	images.append(image)#imageio.imread(resultOutputPath + "/" + "frame%d.jpg" % frameCount))
 
-imageio.mimsave("L_RPCA.gif", images, duration=0.08)
+imageio.mimsave(resultOutputPath + "/" + "L_RPCA.gif", images, duration=0.08)
 
 # Upload gif to the S3.
 client = boto3.client("s3", aws_access_key_id="AKIAIXW57FAC5P2E3ILA", aws_secret_access_key="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")
-client.upload_file("L_RPCA.gif", "vsp-userfiles-mobilehub-602139379", "userData/PRPCA_Finished.gif")
+client.upload_file(resultOutputPath + "/" + "L_RPCA.gif", "vsp-userfiles-mobilehub-602139379", "userData/PRPCA_Finished.gif")
 
 
 # Showing the results visually.

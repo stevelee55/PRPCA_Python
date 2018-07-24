@@ -1,21 +1,24 @@
 # Necessary libraries.
 import os
 # the code must be run by saying python3.6 <filename>
-from imread import imread
-import matplotlib.pyplot as plt
-from skimage import transform
-import cv2
-import numpy
-from skimage.color import rgb2gray
-import matplotlib.transforms
-import imageio
-import boto3
+# from imread import imread
+# import matplotlib.pyplot as plt
+# from skimage import transform
+# import cv2
+# import numpy
+# from skimage.color import rgb2gray
+# import matplotlib.transforms
+# import imageio
+# import boto3
 
 # from VideoToFrames import separateVideoIntoFrames
 # separateVideoIntoFrames("./Data/newData/Test/moving.MOV", 3, "./Data")
 
-client = boto3.client("s3", aws_access_key_id="AKIAIXW57FAC5P2E3ILA", aws_secret_access_key="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")
-client.download_file("vsp-userfiles-mobilehub-602139379", "userData/image.png", "./DownloadedFile.png")
+# client = boto3.client("s3", aws_access_key_id="AKIAIXW57FAC5P2E3ILA", aws_secret_access_key="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")
+# client.download_file("vsp-userfiles-mobilehub-602139379", "userData/image.png", "./DownloadedFile.png")
+# image =
+
+print("Hello")
 
 # images = []
 # # Create Gif.

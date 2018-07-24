@@ -1,7 +1,7 @@
 import numpy
 import cv2
 import matplotlib.pyplot as plt
-from PIL import Image
+
 
 
 def pano2RGBMovie_Main(frame, Mask, height, width, num_of_frames, moviesize):
@@ -35,11 +35,10 @@ def pano2RGBMovie_Main(frame, Mask, height, width, num_of_frames, moviesize):
 		# plt.imshow(newImage)
 		# plt.show()
 
-		result = Image.fromarray((newImage * 255).astype(numpy.uint8))
-		result.save("./Data/newData/Test/frame%d.jpg" % i)
+		#result = Image.fromarray((newImage * 255).astype(numpy.uint8))
+		# result.save("./Data/newData/Test/frame%d.jpg" % i)
 		#cv2.imwrite("./Data/newData/Test/frame%d.jpg" % i, result)
-		movie_frames[:,:,:,i] = result
-
+		movie_frames[:,:,:,i] = newImage
 
 	return movie_frames
 

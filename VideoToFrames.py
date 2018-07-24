@@ -3,9 +3,9 @@ import math
 
 # Separates the video into frames and saves the frames in the current working
 # directory.
-def separateVideoIntoFrames(videoPath, frameRate, destinationPath):
+def separateVideoIntoFrames(rawVideoPath, rawVideoName, frameRate, videoFramesPath):
 	# Getting the video from the given video path.
-	capturedVideo = cv2.VideoCapture(videoPath)
+	capturedVideo = cv2.VideoCapture(rawVideoPath + "/" + rawVideoName)
 	# Ideal frameRate is 3.
 	#vidcap.set(cv2.CAP_PROP_POS_MSEC,20000)
 	isSuccess, frame = capturedVideo.read()
@@ -19,10 +19,11 @@ def separateVideoIntoFrames(videoPath, frameRate, destinationPath):
 			frameId = capturedVideo.get(1)
 			isSuccess, frame = capturedVideo.read()
 			if (frameId % math.floor(frameRate) == 0):
-				currentFrameCount += 1
+				
 				# save frame as jpg file
-				cv2.imwrite(destinationPath + "/frame%d.jpg" % currentFrameCount, frame)
+				cv2.imwrite(videoFramesPath + "/frame%d.jpg" % currentFrameCount, frame)
 				print("Saved frame #: ", currentFrameCount)
+				currentFrameCount += 1
 
 		# Prompts the user when the program is finished converting.
 		print("Finished converting video into frames.")
