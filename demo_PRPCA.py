@@ -60,13 +60,13 @@ def parseDownloadedParameterData():
 useRawVideo = True
 rawVideoName = "PRPCA_RAW.mov"
 rawVideoPath = "." #"./Data/newData/Test/PRPCA_RAW.mov"
-videoFramesPath = "./TestTest" #"." #"./Data/newData/Test" #"./Data/tennis"
+videoFramesPath = "." #"." #"./Data/newData/Test" #"./Data/tennis"
 parameterDataName = "PRPCA_parameters.txt"
-parameterDataPath = "./TestTest"
-resultOutputPath = "./TestTest"
+parameterDataPath = "."
+resultOutputPath = "."
 	# # Between 0.0 -> 1.0. 1.0 is original image size.
 	# percentageToResizeTo = 0.23 # 0.5 is too slow for python, takes about 15 mins, but 0.39 or 0.43 gives decent results.
-getVideoDataFromS3 = False
+getVideoDataFromS3 = True
 # Needs to be less than or equal to the numberOfVideoFrames.
 numberOfFramesToUse = 25 # This may be changed based on how many frames are retreived from the video.
 getParameterDataFromS3 = False
