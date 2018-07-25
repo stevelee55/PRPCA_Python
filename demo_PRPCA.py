@@ -20,7 +20,7 @@ import math
 import imageio
 import boto3
 from PIL import Image
-
+import smtplib
 
 # Custom Class.
 
@@ -48,6 +48,17 @@ def downloadParameterDataFromS3(parameterDataName, parameterDataPath):
 def parseDownloadedParameterData():
 	return "Hello"
 
+emailAddress = "testemailaddress5123@gmail.com"
+#Function for sending an email notification.
+def sendEmailNofi():
+	emailAddress = "testemailaddress5123@gmail.com"
+	content = "PRPCA Finished."
+	server = smtplib.SMTP("smtp.gmail.com", 587)
+	server.starttls()
+	server.login(emailAddress, "Deu04137*")
+	server.sendmail(emailAddress, emailAddress, content)
+	server.quit()
+
 
 ###############################################################
 
@@ -68,7 +79,7 @@ resultOutputPath = "."
 	# percentageToResizeTo = 0.23 # 0.5 is too slow for python, takes about 15 mins, but 0.39 or 0.43 gives decent results.
 getVideoDataFromS3 = True
 # Needs to be less than or equal to the numberOfVideoFrames.
-numberOfFramesToUse = 25 # This may be changed based on how many frames are retreived from the video.
+numberOfFramesToUse = 35 # This may be changed based on how many frames are retreived from the video.
 getParameterDataFromS3 = False
 
 
@@ -82,7 +93,7 @@ if (getVideoDataFromS3):
 # 'useRawVideo' is set to True.
 if (useRawVideo):
 	from VideoToFrames import separateVideoIntoFrames
-	separateVideoIntoFrames(rawVideoPath, rawVideoName, 3, videoFramesPath)
+	separateVideoIntoFrames(rawVideoPath, rawVideoName, 2, videoFramesPath)
 
 # Getting the parameter data from S3 bucket if specified.
 if (getParameterDataFromS3):
@@ -155,24 +166,89 @@ for i in range(numberOfFramesToUse):
 # RGB PRPCA
 # Getting the return value and saving them.
 instance = PRPCA_RGB()
-L_RPCA = instance.PRPCA_RGB_Main(MovMat)
+RPCA_image, L, S, L_RPCA, S_RPCA = instance.PRPCA_RGB_Main(MovMat)
 #RPCA_image, L, S, L_RPCA, S_RPCA = instance.PRPCA_RGB_Main(MovMat)
 
-print("FINAL",len(L_RPCA))
+# Upload gif to the S3.
+client = boto3.client("s3", aws_access_key_id="AKIAIXW57FAC5P2E3ILA", aws_secret_access_key="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")
+
+print("Creating RPCA_image")
+plt.imsave("RPCA_image.jpg", RPCA_image)
+client.upload_file(resultOutputPath + "/" + "RPCA_image.jpg", "vsp-userfiles-mobilehub-602139379", "userData/RPCA_image.jpg")
+
+print("Creating L gif...")
 images = []
-# Create Gif.
+# Create Gif for L.
+for frameCount in range(numberOfFramesToUse):
+	frameData = L[:,:,:,frameCount]
+	image = numpy.array(Image.fromarray((frameData * 255).astype(numpy.uint8)))
+	images.append(image)#imageio.imread(resultOutputPath + "/" + "frame%d.jpg" % frameCount))
+
+imageio.mimsave(resultOutputPath + "/" + "L.gif", images, duration=0.08)
+client.upload_file(resultOutputPath + "/" + "L.gif", "vsp-userfiles-mobilehub-602139379", "userData/L.gif")
+
+
+print("Creating S gif...")
+images = []
+# Create Gif for S.
+for frameCount in range(numberOfFramesToUse):
+	frameData = S[:,:,:,frameCount]
+	image = numpy.array(Image.fromarray((frameData * 255).astype(numpy.uint8)))
+	images.append(image)#imageio.imread(resultOutputPath + "/" + "frame%d.jpg" % frameCount))
+
+imageio.mimsave(resultOutputPath + "/" + "S.gif", images, duration=0.08)
+client.upload_file(resultOutputPath + "/" + "S.gif", "vsp-userfiles-mobilehub-602139379", "userData/S.gif")
+
+print("Creating L_RPCA gif...")
+images = []
+# Create Gif for S.
 for frameCount in range(numberOfFramesToUse):
 	frameData = L_RPCA[:,:,:,frameCount]
 	image = numpy.array(Image.fromarray((frameData * 255).astype(numpy.uint8)))
 	images.append(image)#imageio.imread(resultOutputPath + "/" + "frame%d.jpg" % frameCount))
 
 imageio.mimsave(resultOutputPath + "/" + "L_RPCA.gif", images, duration=0.08)
+client.upload_file(resultOutputPath + "/" + "L_RPCA.gif", "vsp-userfiles-mobilehub-602139379", "userData/L_RPCA.gif")
 
-# Upload gif to the S3.
-client = boto3.client("s3", aws_access_key_id="AKIAIXW57FAC5P2E3ILA", aws_secret_access_key="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")
-client.upload_file(resultOutputPath + "/" + "L_RPCA.gif", "vsp-userfiles-mobilehub-602139379", "userData/PRPCA_Finished.gif")
+print("Creating Original gif...")
+images = []
+# Create Gif for S.
+for frameCount in range(numberOfFramesToUse):
+	frameData = numpy.array(MovMat)[frameCount,:,:,:]
+	image = numpy.array(Image.fromarray((frameData).astype(numpy.uint8)))
+	images.append(image)#imageio.imread(resultOutputPath + "/" + "frame%d.jpg" % frameCount))
+
+imageio.mimsave(resultOutputPath + "/" + "OG.gif", images, duration=0.08)
+client.upload_file(resultOutputPath + "/" + "OG.gif", "vsp-userfiles-mobilehub-602139379", "userData/OG.gif")
+
+sendEmailNofi()
+
+print("Creating S_RPCA gif...")
+images = []
+# Create Gif for S.
+for frameCount in range(numberOfFramesToUse):
+	frameData = numpy.array(S_RPCA)[:,:,:,frameCount]
+	image = numpy.array(Image.fromarray((frameData * 255).astype(numpy.uint8)))
+	images.append(image)#imageio.imread(resultOutputPath + "/" + "frame%d.jpg" % frameCount))
+
+imageio.mimsave(resultOutputPath + "/" + "S_RPCA.gif", images, duration=0.08)
+client.upload_file(resultOutputPath + "/" + "S_RPCA.gif", "vsp-userfiles-mobilehub-602139379", "userData/S_RPCA.gif")
 
 
+
+print("Test...")
+images = []
+# Create Gif for S.
+for frameCount in range(numberOfFramesToUse):
+	frameData = numpy.array(S_RPCA)[:,:,:,frameCount]
+	image = numpy.array(Image.fromarray((frameData).astype(numpy.uint8)))
+	images.append(image)#imageio.imread(resultOutputPath + "/" + "frame%d.jpg" % frameCount))
+
+imageio.mimsave(resultOutputPath + "/" + "WAHH.gif", images, duration=0.08)
+
+
+
+sendEmailNofi()
 # Showing the results visually.
 # Panorama
 # plt.imshow(RPCA_image)

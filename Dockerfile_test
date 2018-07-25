@@ -1,0 +1,5 @@
+From python:3.4
+COPY test.py test.py
+RUN pip install boto3
+COPY L_RPCA.gif L_RPCA.gif
+CMD ["python3.4", "test.py"]

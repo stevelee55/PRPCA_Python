@@ -196,26 +196,26 @@ class PRPCA_RGB(object):
 		#import pdb; pdb.set_trace()
 
 		# # Seems like I have to convery the image back to [0..255] range?
-		imageeee = L_RPCA[:,:,:,0]
+		RPCA_image = L_RPCA[:,:,:,0]
 		# plt.imshow(imageeee)
-		plt.imsave("L.jpg", imageeee)
+		plt.imsave("L.jpg", RPCA_image)
 		# plt.show()
 
 		self.S3_Upload_Image("L.jpg")
 		
 
-		imageeee = S_RPCA[:,:,:,0]
+		# imageeee = S_RPCA[:,:,:,0]
 		#plt.imshow(imageeee)
 		#plt.savefig("S.jpg")
 
 		# (L_RPCA, Mask, height, width, size(MovMat,4), size(MovMat));
 
 		numberOfFrames = len(movmat)
-		movie_frames = pano2RGBMovie_Main(L_RPCA, Mask, height, width, numberOfFrames,numpy.array(movmat).shape)
+		L = pano2RGBMovie_Main(L_RPCA, Mask, height, width, numberOfFrames,numpy.array(movmat).shape)
+		S = pano2RGBMovie_Main(S_RPCA, Mask, height, width, numberOfFrames,numpy.array(movmat).shape)
 
 
-
-		return movie_frames #"hello world", [2,3], "yay", "123", 3
+		return RPCA_image, L, S, L_RPCA, S_RPCA  #"hello world", [2,3], "yay", "123", 3
 
 
 

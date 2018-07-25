@@ -1,8 +1,20 @@
 import math
 import numpy
 from OptShrink import OptShrink_Main
+import smtplib
 
 class improvedRobustPCA(object):
+
+	
+	#Function for sending an email notification.
+	def sendEmailNofi(self, inputContent):
+		emailAddress = "testemailaddress5123@gmail.com"
+		content = inputContent
+		server = smtplib.SMTP("smtp.gmail.com", 587)
+		server.starttls()
+		server.login(emailAddress, "Deu04137*")
+		server.sendmail(emailAddress, emailAddress, content)
+		server.quit()
 	# Soft thresholding
 	def soft(self, X, lamb):
 		print("ADSFADSFADF :D")
@@ -113,8 +125,16 @@ class improvedRobustPCA(object):
 				S = TtransArray * self.soft(T * (Sbar - tau * Z), tau * lambdaS)
 				print("S",S)
 
-			if (nIters >= 2):  # or ((deltaL(nIters) < delta) and ()
+			if (nIters >= maxIters):  # or ((deltaL(nIters) < delta) and ()
 				done = True
 			print("Iteration #:", nIters)
+			if (nIters == 25):
+				self.sendEmailNofi("nIters: 25")
+			if (nIters == 50):
+				self.sendEmailNofi("nIters: 50")
+			if (nIters == 75):
+				self.sendEmailNofi("nIters: 75")
+			if (nIters == 100):
+				self.sendEmailNofi("Iteration complete!")
 		   #import pdb; pdb.set_trace()
 		return L, S

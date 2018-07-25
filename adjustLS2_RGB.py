@@ -27,7 +27,7 @@ def adjustLS2(L, S2, M):
 	#import pdb; pdb.set_trace()
 
 	# 35 is magic number here.
-	Delta = numpy.tile(Delta, (35,1,1))
+	Delta = numpy.tile(Delta, (len(L[0][0]),1,1))
 
 	print("adjust :D")
 

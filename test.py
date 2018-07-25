@@ -1,5 +1,5 @@
 # Necessary libraries.
-import os
+# import os
 # the code must be run by saying python3.6 <filename>
 # from imread import imread
 # import matplotlib.pyplot as plt
@@ -9,7 +9,7 @@ import os
 # from skimage.color import rgb2gray
 # import matplotlib.transforms
 # import imageio
-# import boto3
+import boto3
 
 # from VideoToFrames import separateVideoIntoFrames
 # separateVideoIntoFrames("./Data/newData/Test/moving.MOV", 3, "./Data")
@@ -18,7 +18,23 @@ import os
 # client.download_file("vsp-userfiles-mobilehub-602139379", "userData/image.png", "./DownloadedFile.png")
 # image =
 
-print("Hello")
+# Upload gif to the S3.
+# client = boto3.client("s3", aws_access_key_id="AKIAIXW57FAC5P2E3ILA", aws_secret_access_key="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")
+# client.upload_file("." + "/" + "L_RPCA.gif", "vsp-userfiles-mobilehub-602139379", "userData/PRPCA_Finished.gif")
+
+import smtplib
+
+emailAddress = 'testemailaddress5123@gmail.com'
+#Function for sending an email notification.
+def sendEmailNofi(inputContent):
+    content = inputContent
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
+    server.login(emailAddress, 'Deu04137*')
+    server.sendmail(emailAddress, emailAddress, content)
+    server.quit()
+
+sendEmailNofi("TestTest")
 
 # images = []
 # # Create Gif.
