@@ -77,7 +77,7 @@ parameterDataPath = "."
 resultOutputPath = "."
 	# # Between 0.0 -> 1.0. 1.0 is original image size.
 	# percentageToResizeTo = 0.23 # 0.5 is too slow for python, takes about 15 mins, but 0.39 or 0.43 gives decent results.
-getVideoDataFromS3 = True
+getVideoDataFromS3 = False
 # Needs to be less than or equal to the numberOfVideoFrames.
 numberOfFramesToUse = 35 # This may be changed based on how many frames are retreived from the video.
 getParameterDataFromS3 = False
@@ -136,7 +136,7 @@ firstFrame = imread(videoFramesPath + "/" + videoFrameNames[0])
 height = len(firstFrame)
 width = len(firstFrame[0])
 # Calculate the ideal video frame size based on the recommended values.
-recommendedWidth = 427.0
+recommendedWidth = 300 #427.0
 multiplier = 1.0
 if (width > recommendedWidth):
 	multiplier = recommendedWidth / width
