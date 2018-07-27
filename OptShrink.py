@@ -109,7 +109,7 @@ def OptShrink_Main(Y, r):
 	#import pdb; pdb.set_trace()
 
 	# Parsing inputs.
-	m, n = numpy.array(Y).shape
+	m, n = Y.shape
 
 	# print(m)
 	# print(n)
@@ -130,8 +130,8 @@ def OptShrink_Main(Y, r):
 	#import pdb; pdb.set_trace()
 
 
-	newUy = numpy.array(numpy.array(U)[:,0:r + 1])
-	newVy = numpy.array(numpy.array(V)[0:r + 1,:])
+	newUy = numpy.asarray(numpy.asarray(U)[:,0:r + 1])
+	newVy = numpy.asarray(numpy.asarray(V)[0:r + 1,:])
 	# print("U:][0:r + 1]", thing)
 	# print("V:][0:r + 1]", thing1)
 	# print("U:][0:r + 1]", thing.shape)

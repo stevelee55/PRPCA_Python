@@ -11,7 +11,6 @@
 # Necessary Libraries.
 
 import os
-from imread import imread
 import matplotlib.pyplot as plt
 from skimage import transform
 import cv2
@@ -68,7 +67,7 @@ def sendEmailNofi():
 # which involves separating the video into frames. Otherwise,
 # the pre-separated video frames will be used, which are located
 # at the path indicated by 'videoFramesPath'.
-useRawVideo = True
+useRawVideo = False
 rawVideoName = "PRPCA_RAW.mov"
 rawVideoPath = "." #"./Data/newData/Test/PRPCA_RAW.mov"
 videoFramesPath = "." #"." #"./Data/newData/Test" #"./Data/tennis"
@@ -129,14 +128,16 @@ if (numberOfFramesToUse > numberOfVideoFrames):
 
 # Getting the width and height of the video using the
 # first frame of the video.
-firstFrame = imread(videoFramesPath + "/" + videoFrameNames[0])
+# Returned value is Mat type in opencv.
+firstFrame = cv2.imread(videoFramesPath + "/" + videoFrameNames[0])
 
 # Keep in mind that the width of the video is usually shorter
 # when it is in a landscape.
-height = len(firstFrame)
-width = len(firstFrame[0])
+imageDimension = firstFrame.shape
+height = imageDimension[0]
+width = imageDimension[1]
 # Calculate the ideal video frame size based on the recommended values.
-recommendedWidth = 300 #427.0
+recommendedWidth = 427.0
 multiplier = 1.0
 if (width > recommendedWidth):
 	multiplier = recommendedWidth / width
@@ -147,18 +148,21 @@ print("Width",newWidth)
 print("Height",newHeight)
 
 # Initializing the 4-D Matrix with 0s.
-RGBCount = 3
+RGBDimension = 3
 # The MovMat is a 4-D array/Matrix that has the dimension of
-# height * width * 3 * # of frames.
-MovMat = [[[[0 for x in range(newHeight)] for y in range(newWidth)] for m in range(RGBCount)] for z in range(numberOfFramesToUse)]
+# newHeight * newWidth * 3 * # of frames to use.
+MovMat = numpy.zeros((newHeight, newWidth, RGBDimension, numberOfFramesToUse), numpy.uint8)
 
 # Goes through every single frame and sets it to the MovMat. Starts from frame0.jpg.
 for i in range(numberOfFramesToUse):
 	# Getting the specific frame and saving in the 4-D array.
-	frame = imread(videoFramesPath + "/" + videoFrameNames[i])
+	frame = cv2.imread(videoFramesPath + "/" + videoFrameNames[i])
 	# cv2.resize doesn't do im2double automatically so normalizing needs to be done later.
-	MovMat[i] = cv2.resize(frame, None, fx=multiplier, fy=multiplier)
+	# Saving in 0 to 255 values, since the homography uses cv2 libraries.
+	MovMat[:,:,:,i] = cv2.resize(frame, (newWidth, newHeight))
 
+# LATER
+# cv2.imshow("Test Image", cv2.normalize(MovMat[:,:,:,0], alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U, dst=None))
 
 # Arvin. Julia. Calilng Julia.rpca. Julia optimization, precompiling, which makes it faster. Registering do it in python, part after it, use Julia, which precompilation, there is a way to do it. 
 # Julia is pretty easy. Figure out inefficient

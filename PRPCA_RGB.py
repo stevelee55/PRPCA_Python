@@ -87,9 +87,6 @@ class PRPCA_RGB(object):
 		optsHT.isRGB = isRGB
 		optsHT.method = method
 
-	#import pdb; pdb.set_trace()
-
-
 		# Homography transformation
 		homographyTransInstance = HomographyTrans()
 		Y, Mask, height, width, T = homographyTransInstance.HomographyTrans_Main(movmat, optsHT)
@@ -109,29 +106,29 @@ class PRPCA_RGB(object):
 		# print("m:", len(m))
 		# # m = any(Mask,2)
 
-		# Debugger.
-	#import pdb; pdb.set_trace()
-
-		Ytil = []
-		Mtil = []
-		m = []
+		Ytil = numpy.empty((0, movmat.shape[3]), float)
+		Mtil = numpy.empty((0, movmat.shape[3]), float)
+		m = numpy.empty((0, 1), int)
 
 
 		added = False
 
 		for h in range(len(Mask)):
+			print(h)
 			for w in range(len(Mask[0])):
 				# print("Checking",Mask[i][j])
 				# This replicates any by allowing any value that is only 1.
 				if (Mask[h][w] != 0):
-					Ytil.append(Y[h])
-					Mtil.append(Mask[h])
+					print(w)
+					import pdb; pdb.set_trace()
+					Ytil = numpy.append(Ytil, numpy.reshape(Y[h], (1, Y.shape[1])), axis=0)
+					Mtil = numpy.append(Mtil, numpy.reshape(Mask[h], (1, Mask.shape[1])), axis=0)
 					# print("i",i)
-					m.append(1)
+					m = numpy.append(m, numpy.reshape(1, (1, 1)), axis=0)
 					added = True
 					break
 			if (not added):
-				m.append(0)
+				m = numpy.append(m, numpy.reshape(0, (1, 1)), axis=0)
 			else:
 				added = False
 
@@ -140,7 +137,7 @@ class PRPCA_RGB(object):
 		# print("Mtil:", len(Mtil))
 		# print(len(Mask))
 
-	#import pdb; pdb.set_trace()
+		import pdb; pdb.set_trace()
 
 		# RPCA
 		opts = struct
@@ -150,7 +147,7 @@ class PRPCA_RGB(object):
 		# r should be 0 since it's later used to reference a value and matlab is referring to the index 1 (matlab) value.
 		Ltil, Stil = improvedRobustPCAInstance.improvedRobustPCA_Main(Ytil, 0, LamS, opts)
 
-		#import pdb; pdb.set_trace()
+		import pdb; pdb.set_trace()
 
 	#import pdb; pdb.set_trace()
 		# print("Ltil",Ltil)
@@ -193,7 +190,7 @@ class PRPCA_RGB(object):
 
 		L_RPCA, S_RPCA = adjustLS2_RGB_Main(L_RPCA, S_RPCA, M)
 
-		#import pdb; pdb.set_trace()
+		import pdb; pdb.set_trace()
 
 		# # Seems like I have to convery the image back to [0..255] range?
 		RPCA_image = L_RPCA[:,:,:,0]

@@ -53,16 +53,15 @@ class HomographyTrans(object):
 
 		# Reading in the first frame.
 		if (not isRGB):
-			# I put 2 instead of 3 because python is 0-indexed.
-			numOfFrames = len(movmat) #movmat.shape[3] ?
-			# Get only the first frame. This is probably because when
-			# the video is not RGB, then it is only 3-D.
-			imgB = movmat[0]
+			numOfFrames = movmat.shape[3]
+			# Get only the first frame.
+			imgB = movmat[:,:,:,0]
 		else:
 			# Not exactly sure what this returns but just going by the website: http://mathesaurus.sourceforge.net/matlab-numpy.html
-			numOfFrames = len(movmat)
+			numOfFrames = movmat.shape[3]
 			# Get only the first frame's gray color(?)
-			imgB = cv2.cvtColor(movmat[0], cv2.COLOR_BGR2GRAY) # Surf only works with this.
+			print(movmat)
+			imgB = cv2.cvtColor(movmat[:,:,:,0], cv2.COLOR_BGR2GRAY) # Surf only works with this.
 
 		# Extract features points in the first frame.
 		# Use SURF first and then try to use others.
@@ -78,8 +77,8 @@ class HomographyTrans(object):
 		#featureImage = cv2.drawKeypoints(imgB, points, None)
 		# Creating 1-D matrix of tforms. Based on the matlab outputs, seems like affin2d and projective2d results are the same.
 		# I think the only difference is that the object type is different.
-		tformObject = matplotlib.transforms.Affine2D(numpy.eye(3))
-		tforms = [tformObject for x in range(numOfFrames)]
+		tformObject = numpy.eye(3)
+		tforms = numpy.asarray([tformObject for x in range(numOfFrames)])
 
 		# Repeating the above for every frame.
 		# Starting from the index 1 because the first frame has already been processed.
@@ -89,9 +88,9 @@ class HomographyTrans(object):
 
 			# Reading in the next frame.
 			if (not isRGB):
-				imgB = movmat[n]
+				imgB = movmat[:,:,:,n]
 			else:
-				imgB = cv2.cvtColor(movmat[n], cv2.COLOR_BGR2GRAY)
+				imgB = cv2.cvtColor(movmat[:,:,:,n], cv2.COLOR_BGR2GRAY)
 
 			points, features = surf.detectAndCompute(imgB, None)
 			# create BFMatcher object for feature matching.
@@ -101,12 +100,12 @@ class HomographyTrans(object):
 			indexPairs = bf.match(features, featuresPrevious)
 			# Should be for looped.
 			# indexPairs[i].queryIdx gives index of points that were matched.
-			matchedPoints = [points[indexPairs[i].queryIdx] for i in range(len(indexPairs))]
-			numpyArrayMatchedPoints = numpy.array([matchedPoints[i].pt for i in range(len(matchedPoints))])
+			matchedPoints = numpy.asarray([points[indexPairs[i].queryIdx] for i in range(len(indexPairs))])
+			numpyArrayMatchedPoints = numpy.asarray([matchedPoints[i].pt for i in range(len(matchedPoints))])
 			# matchedPoints have the KeyPoint objects, which an be accesesd by index and .pt.
 			# print(matchedPoints[0].pt)
-			matchedPointsPrev = [pointsPrevious[indexPairs[i].trainIdx] for i in range(len(indexPairs))]
-			numpyArrayMatchedPointsPrev = numpy.array([matchedPointsPrev[i].pt for i in range(len(matchedPointsPrev))])
+			matchedPointsPrev = numpy.asarray([pointsPrevious[indexPairs[i].trainIdx] for i in range(len(indexPairs))])
+			numpyArrayMatchedPointsPrev = numpy.asarray([matchedPointsPrev[i].pt for i in range(len(matchedPointsPrev))])
 			# Estimating geometric transform.
 			# Not sure what the Affine = Bool does.
 			estimatePair, status = cv2.findHomography(numpyArrayMatchedPoints, numpyArrayMatchedPointsPrev,cv2.RANSAC,5.0) #cv2.estimateRigidTransform(numpyArrayMatchedPoints, numpyArrayMatchedPointsPrev, True)
@@ -134,8 +133,8 @@ class HomographyTrans(object):
 
 
 		# Calculating panorama dimensions.
-		frameHeight = len(movmat[0])
-		frameWidth = len(movmat[0][0])
+		frameHeight = movmat.shape[0]
+		frameWidth = movmat.shape[1]
 		# print(frameHeight)
 		# print(frameWidth)
 		# Getting the panorama size.
@@ -143,20 +142,20 @@ class HomographyTrans(object):
 		ylim = []
 
 		# Getting center image's offset points for x and y.
-		estimateMatrix = numpy.float32(tforms[centerImageId])
+		estimateMatrix = numpy.float64(tforms[centerImageId])
 		# Resetting the values.
-		pt1 = numpy.array([0,0,1])
-		pt2 = numpy.array([0,frameHeight,1])
-		pt3 = numpy.array([frameWidth,frameHeight,1])
-		pt4 = numpy.array([frameWidth,0,1])
+		pt1 = numpy.asarray([0,0,1])
+		pt2 = numpy.asarray([0,frameHeight,1])
+		pt3 = numpy.asarray([frameWidth,frameHeight,1])
+		pt4 = numpy.asarray([frameWidth,0,1])
 		# Transforming the cornor points.
 		pt1 = numpy.matmul(estimateMatrix, pt1)
 		pt2 = numpy.matmul(estimateMatrix, pt2)
 		pt3 = numpy.matmul(estimateMatrix, pt3)
 		pt4 = numpy.matmul(estimateMatrix, pt4)
 
-		xlim.extend([(pt1[0] / pt1[2]), (pt2[0] / pt2[2]), (pt3[0] / pt3[2]), (pt4[0] / pt4[2])])
-		ylim.extend([(pt1[1] / pt1[2]), (pt2[1] / pt2[2]), (pt3[1] / pt3[2]), (pt4[1] / pt4[2])])
+		xlim.extend(numpy.asarray([(pt1[0] / pt1[2]), (pt2[0] / pt2[2]), (pt3[0] / pt3[2]), (pt4[0] / pt4[2])]))
+		ylim.extend(numpy.asarray([(pt1[1] / pt1[2]), (pt2[1] / pt2[2]), (pt3[1] / pt3[2]), (pt4[1] / pt4[2])]))
 
 		offsetxMin = min(xlim)
 		offsetxMax = max(xlim)
@@ -166,20 +165,20 @@ class HomographyTrans(object):
 
 		# Getting the x and y limits of each of the frames.
 		for i in range(len(tforms)):
-			estimateMatrix = numpy.float32(tforms[i])
+			estimateMatrix = numpy.float64(tforms[i])
 			# Resetting the values.
-			pt1 = numpy.array([0,0,1])
-			pt2 = numpy.array([0,frameHeight,1])
-			pt3 = numpy.array([frameWidth,frameHeight,1])
-			pt4 = numpy.array([frameWidth,0,1])
+			pt1 = numpy.asarray([0,0,1])
+			pt2 = numpy.asarray([0,frameHeight,1])
+			pt3 = numpy.asarray([frameWidth,frameHeight,1])
+			pt4 = numpy.asarray([frameWidth,0,1])
 			# Transforming the cornor points.
 			pt1 = numpy.matmul(estimateMatrix, pt1)
 			pt2 = numpy.matmul(estimateMatrix, pt2)
 			pt3 = numpy.matmul(estimateMatrix, pt3)
 			pt4 = numpy.matmul(estimateMatrix, pt4)
 
-			xlim.extend([(pt1[0] / pt1[2]), (pt2[0] / pt2[2]), (pt3[0] / pt3[2]), (pt4[0] / pt4[2])])
-			ylim.extend([(pt1[1] / pt1[2]), (pt2[1] / pt2[2]), (pt3[1] / pt3[2]), (pt4[1] / pt4[2])])
+			xlim.extend(numpy.asarray([(pt1[0] / pt1[2]), (pt2[0] / pt2[2]), (pt3[0] / pt3[2]), (pt4[0] / pt4[2])]))
+			ylim.extend(numpy.asarray([(pt1[1] / pt1[2]), (pt2[1] / pt2[2]), (pt3[1] / pt3[2]), (pt4[1] / pt4[2])]))
 
 			# print(i)
 			# print(pt1)
@@ -220,7 +219,7 @@ class HomographyTrans(object):
 			# pos-x makes it go right, pos-y makes it go down.
 			x_offset = -offsetxMin + -xMin
 			y_offset = offsetyMin + -yMin
-			translateMatrix = [[1, 0, x_offset], [ 0, 1, y_offset],[0, 0, 1]]
+			translateMatrix = numpy.asarray([[1, 0, x_offset], [ 0, 1, y_offset], [0, 0, 1]])
 			tforms[i] = numpy.matmul(translateMatrix, tforms[i])
 
 			# imgB = movmat[i]
@@ -232,17 +231,17 @@ class HomographyTrans(object):
 		numOfPoints = height * width * 3
 		# print(numOfPoints)
 		# Y is accessed by Y[frame #][points]
-		Y = [[0 for i in range(len(tforms))] for j in range(numOfPoints)]
-		Mask = [[0 for i in range(len(tforms))] for j in range(numOfPoints)]
+		Y = numpy.zeros((numOfPoints, len(tforms)) ,numpy.float64)
+		Mask = numpy.zeros((numOfPoints, len(tforms)) ,numpy.float64)
 
 		for i in range(len(tforms)):
 			if isRGB:
-				imgB = movmat[i]
-				M = numpy.float32(tforms[i])
+				imgB = movmat[:,:,:,i]
+				M = numpy.float64(tforms[i])
 				warpedImage = cv2.warpPerspective(imgB, M, (width, height))
-				# This is what im2double does.
-				warpedImage = cv2.normalize(warpedImage.astype('float'), None, 0.0, 1.0, cv2.NORM_MINMAX)
-
+				# # This is what im2double does.
+				# Converting the image to float 64, an image with pixel values that vary from 0.0 to 1.0.
+				warpedImage = cv2.normalize(warpedImage, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_64F, dst=None)
 
 				dimension = numpy.array(imgB).shape
 				mask = cv2.warpPerspective(numpy.ones(dimension), M, (width, height))
