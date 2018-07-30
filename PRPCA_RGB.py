@@ -7,6 +7,8 @@ import numpy
 import matplotlib.pyplot as plt
 from pano2RGBMovie import pano2RGBMovie_Main
 import boto3
+import cv2
+from skimage import img_as_ubyte
 
 # import matplotlib
 # # # Force matplotlib to not use any Xwindows backend.
@@ -87,6 +89,9 @@ class PRPCA_RGB(object):
 		optsHT.isRGB = isRGB
 		optsHT.method = method
 
+	#import pdb; pdb.set_trace()
+
+
 		# Homography transformation
 		homographyTransInstance = HomographyTrans()
 		Y, Mask, height, width, T = homographyTransInstance.HomographyTrans_Main(movmat, optsHT)
@@ -106,29 +111,29 @@ class PRPCA_RGB(object):
 		# print("m:", len(m))
 		# # m = any(Mask,2)
 
-		Ytil = numpy.empty((0, movmat.shape[3]), float)
-		Mtil = numpy.empty((0, movmat.shape[3]), float)
-		m = numpy.empty((0, 1), int)
+		# Debugger.
+	#import pdb; pdb.set_trace()
+
+		Ytil = []
+		Mtil = []
+		m = []
 
 
 		added = False
 
 		for h in range(len(Mask)):
-			print(h)
 			for w in range(len(Mask[0])):
 				# print("Checking",Mask[i][j])
 				# This replicates any by allowing any value that is only 1.
 				if (Mask[h][w] != 0):
-					print(w)
-					import pdb; pdb.set_trace()
-					Ytil = numpy.append(Ytil, numpy.reshape(Y[h], (1, Y.shape[1])), axis=0)
-					Mtil = numpy.append(Mtil, numpy.reshape(Mask[h], (1, Mask.shape[1])), axis=0)
+					Ytil.append(Y[h])
+					Mtil.append(Mask[h])
 					# print("i",i)
-					m = numpy.append(m, numpy.reshape(1, (1, 1)), axis=0)
+					m.append(1)
 					added = True
 					break
 			if (not added):
-				m = numpy.append(m, numpy.reshape(0, (1, 1)), axis=0)
+				m.append(0)
 			else:
 				added = False
 
@@ -137,8 +142,9 @@ class PRPCA_RGB(object):
 		# print("Mtil:", len(Mtil))
 		# print(len(Mask))
 
-		import pdb; pdb.set_trace()
-
+		Ytil = numpy.asarray(Ytil)
+		Mtil = numpy.asarray(Mtil)
+		m = numpy.asarray(m)
 		# RPCA
 		opts = struct
 		opts.M = Mtil
@@ -147,7 +153,7 @@ class PRPCA_RGB(object):
 		# r should be 0 since it's later used to reference a value and matlab is referring to the index 1 (matlab) value.
 		Ltil, Stil = improvedRobustPCAInstance.improvedRobustPCA_Main(Ytil, 0, LamS, opts)
 
-		import pdb; pdb.set_trace()
+		#import pdb; pdb.set_trace()
 
 	#import pdb; pdb.set_trace()
 		# print("Ltil",Ltil)
@@ -178,7 +184,7 @@ class PRPCA_RGB(object):
 
 
 		#import pdb; pdb.set_trace()
-		shape = (height, width, 3, len(movmat))
+		shape = (height, width, 3, movmat.shape[3])
 		# # print(shape)
 		L_RPCA = numpy.reshape(Lhat, shape,order="F")
 		# print(L_RPCA.shape)
@@ -193,12 +199,17 @@ class PRPCA_RGB(object):
 		import pdb; pdb.set_trace()
 
 		# # Seems like I have to convery the image back to [0..255] range?
-		RPCA_image = L_RPCA[:,:,:,0]
+		# RPCA_image = L_RPCA[:,:,:,0]
 		# plt.imshow(imageeee)
-		plt.imsave("L.jpg", RPCA_image)
-		# plt.show()
 
-		self.S3_Upload_Image("L.jpg")
+		# fixedImage = cv2.normalize(S_RPCA[:,:,:,0], alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U, dst=None)
+		cv2.imshow("cv2 image", img_as_ubyte(S_RPCA[:,:,:,0]))
+
+		# plt.imsave("L.jpg", RPCA_image)
+
+		# plt.imsave("S.jpg", S_RPCA[:,:,:,0])
+
+		# self.S3_Upload_Image("L.jpg")
 		
 
 		# imageeee = S_RPCA[:,:,:,0]

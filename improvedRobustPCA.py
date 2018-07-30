@@ -18,12 +18,12 @@ class improvedRobustPCA(object):
 	# Soft thresholding
 	def soft(self, X, lamb):
 		print("ADSFADSFADF :D")
-		print(numpy.sign(X))
-		print(abs(X))
-		print(abs(X) - lamb)
-		print(numpy.maximum((abs(X) - lamb), 0))
+		#print(numpy.sign(X))
+		#print(abs(X))
+		#print(abs(X) - lamb)
+		#print(numpy.maximum((abs(X) - lamb), 0))
 		Y = numpy.sign(X) * numpy.maximum((abs(X) - lamb), 0)
-		print("Y", Y)
+		#print("Y", Y)
 		return Y
 
 	# Function that parses struct field
@@ -116,14 +116,14 @@ class improvedRobustPCA(object):
 				# print("Z", Z)
 				# print("Lbar - tau * Z", Lbar - tau * Z)
 				# print("r", r)
-				L, sX, MSE, RMSE = OptShrink_Main(numpy.asarray([Lbar - tau * Z]), r)
-				print("L",L)
-				print("MSE", MSE)
-				print("RMSE", RMSE)
+				L, sX, MSE, RMSE = OptShrink_Main(numpy.asarray(Lbar - tau * Z), r)
+				#print("L",L)
+				#print("MSE", MSE)
+				#print("RMSE", RMSE)
 				TtransArray = numpy.asarray([T])
 				TtransArray = TtransArray.transpose()
-				S = TtransArray * self.soft(T * (Sbar - tau * Z), tau * lambdaS)
-				print("S",S)
+				S = TtransArray * self.soft(numpy.asarray(T * (Sbar - tau * Z)), tau * lambdaS)
+				#print("S",S)
 
 			if (nIters >= maxIters):  # or ((deltaL(nIters) < delta) and ()
 				done = True

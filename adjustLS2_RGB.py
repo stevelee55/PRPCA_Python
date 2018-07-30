@@ -6,7 +6,7 @@ def adjustLS2(L, S2, M):
 
 	#import pdb; pdb.set_trace()
 
-	X = S2
+	X = numpy.copy(S2)
 	for j in range(len(M[0][0])):
 		# Going through the width.
 		for k in range(len(M[0])):
@@ -27,7 +27,7 @@ def adjustLS2(L, S2, M):
 	#import pdb; pdb.set_trace()
 
 	# 35 is magic number here.
-	Delta = numpy.tile(Delta, (len(L[0][0]),1,1))
+	Delta = numpy.tile(Delta, (L.shape[2],1,1))
 
 	print("adjust :D")
 

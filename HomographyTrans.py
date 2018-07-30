@@ -241,7 +241,7 @@ class HomographyTrans(object):
 				warpedImage = cv2.warpPerspective(imgB, M, (width, height))
 				# # This is what im2double does.
 				# Converting the image to float 64, an image with pixel values that vary from 0.0 to 1.0.
-				warpedImage = cv2.normalize(warpedImage, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_64F, dst=None)
+				warpedImage = cv2.normalize(warpedImage.astype(float), alpha=0, beta=1, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_64F, dst=None)
 
 				dimension = numpy.array(imgB).shape
 				mask = cv2.warpPerspective(numpy.ones(dimension), M, (width, height))

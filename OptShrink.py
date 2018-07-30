@@ -56,8 +56,8 @@ def optimalShrinkage(s, m, n, r):
 	phinss = numpy.multiply((ss / (n - r)), s1oss2msHs)
 	Dss = numpy.multiply(phimss, phinss)
 
-	print("1", phimss)
-	print("2",phinss)
+	#print("1", phimss)
+	#print("2",phinss)
 	# print("Dss", Dss)
 
 	# Numerical approximation of D transform derivative. 
@@ -66,16 +66,16 @@ def optimalShrinkage(s, m, n, r):
 	phinpss = (1 / (n - r)) * (numpy.sum(((-2 * numpy.power((ss / ss2msHs), 2))), axis=1) + s1oss2msHs)
 	Dpss = numpy.multiply(phimss, phinpss) + numpy.multiply(phinss, phimpss)
 
-	print("1", phimpss)
-	print("2",phinpss)
+	#print("1", phimpss)
+	#print("2",phinpss)
 	# print("Dpss",Dpss)
 
 	# Optimal Shrinkage.
 	w = -2 * (numpy.divide(Dss, Dpss))
 
-	print("w",w)
-	print("Dss", Dss)
-	print("Dpss", Dpss)
+	#print("w",w)
+	#print("Dss", Dss)
+	#print("Dpss", Dpss)
 
 	#wnanArr = numpy.isnan(w)
 	for i in range(len(w)):
@@ -106,8 +106,6 @@ def optimalShrinkage(s, m, n, r):
 
 def OptShrink_Main(Y, r):
 
-	#import pdb; pdb.set_trace()
-
 	# Parsing inputs.
 	m, n = Y.shape
 
@@ -130,8 +128,8 @@ def OptShrink_Main(Y, r):
 	#import pdb; pdb.set_trace()
 
 
-	newUy = numpy.asarray(numpy.asarray(U)[:,0:r + 1])
-	newVy = numpy.asarray(numpy.asarray(V)[0:r + 1,:])
+	newUy = numpy.asarray(U)[:,0:r + 1]
+	newVy = numpy.asarray(V)[0:r + 1,:]
 	# print("U:][0:r + 1]", thing)
 	# print("V:][0:r + 1]", thing1)
 	# print("U:][0:r + 1]", thing.shape)
