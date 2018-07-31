@@ -5,11 +5,11 @@ import matplotlib.pyplot as plt
 
 
 def pano2RGBMovie_Main(frame, Mask, height, width, num_of_frames, moviesize):
-	movie_frames = numpy.zeros((moviesize[1], moviesize[2], 3, num_of_frames))
+	movie_frames = numpy.zeros((moviesize[0], moviesize[1], moviesize[2], moviesize[3]))
 
 
 	for i in range(num_of_frames):
-		# import pdb; pdb.set_trace()
+		import pdb; pdb.set_trace()
 		# May or may not have to add 1 to the height times width. I can't add it because it's too large by 1 to be reshaped into height by width.
 		Mask_frame = numpy.reshape(numpy.array(Mask)[0 : height * width, i], (height, width), order="F")
 		indicesOfValuesMatchingGivenConditions = numpy.where(Mask_frame)
@@ -30,7 +30,7 @@ def pano2RGBMovie_Main(frame, Mask, height, width, num_of_frames, moviesize):
 		# plt.imshow(image)
 		# plt.show()
 
-		newImage = cv2.resize(image, (moviesize[2],moviesize[1]))
+		newImage = cv2.resize(image, (moviesize[1],moviesize[0]))
 
 		# plt.imshow(newImage)
 		# plt.show()

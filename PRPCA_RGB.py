@@ -202,8 +202,17 @@ class PRPCA_RGB(object):
 		# RPCA_image = L_RPCA[:,:,:,0]
 		# plt.imshow(imageeee)
 
+
+
 		# fixedImage = cv2.normalize(S_RPCA[:,:,:,0], alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U, dst=None)
-		cv2.imshow("cv2 image", img_as_ubyte(S_RPCA[:,:,:,0]))
+		# cv2.imshow("cv2 image", img_as_ubyte(cv2.normalize(S_RPCA[:,:,:,0], alpha=0, beta=1, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_64F, dst=None)))
+
+		# Showing can just be done by this.
+		cv2.imshow("cv2 image", S_RPCA[:,:,:,0])
+
+		# To write the file, it needs to be converted to -1 to 1 scale then back to 0 to 255
+		cv2.imwrite("DIDITWORLS.jpg", img_as_ubyte(cv2.normalize(S_RPCA[:,:,:,0], alpha=-1, beta=1, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_64F, dst=None)))
+
 
 		# plt.imsave("L.jpg", RPCA_image)
 
